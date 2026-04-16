@@ -4,7 +4,7 @@ print(f"Device: {torch.cuda.get_device_name(0)}")
 
 try:
     # 模拟报错位置的行为：创建一个 BF16 张量并转成 F32
-    x = torch.randn(1, 2048, device="cuda", dtype=torch.bfloat16)
+    x = torch.randn(1, 10, 2048, device="cuda", dtype=torch.bfloat16)
     # y = x.to(torch.float32) 
     # print("Basic tensor conversion: Success")
     # 总量同样是 20480 个元素，看一维行不行
