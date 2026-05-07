@@ -9,8 +9,8 @@ import numpy as np
 
 # %%
 # use if not installed already
-%pip install torch==2.6.0 #+cu124
-%pip install transformers==5.5.4 peft==0.19.1 matplotlib
+# %pip install torch==2.6.0 #+cu124
+# %pip install transformers==5.5.4 peft==0.19.1 matplotlib
 
 # %%
 # load tokenizer and model
@@ -26,6 +26,23 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map="auto",
     attn_implementation="sdpa"
 )
+print(f"Model Name: {model_name}")
+
+# %%
+#test raw model
+_prompt = "Describe the property of sin and cos functions. List the properties one by one."
+_message = [{"role": "user", "content": _prompt}]
+inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
+with torch.no_grad():
+    generated_ids = model.generate(
+        **inputs,
+        max_new_tokens=512,
+        do_sample=True,
+        temperature=0.7,
+        top_p=0.9,
+    )
+generated_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+print(f"Raw Model Generation:\n{generated_text}\n")
 
 # %%
 # load dataset 
@@ -61,6 +78,7 @@ BATCH_SIZE = 8
 GRADIENT_ACCUMULATION_STEPS = 8
 MAX_LENGTH = 1024
 
+print(f"Epochs: {EPOCHS}, Learning Rate: {LEARNING_RATE}, Batch Size: {BATCH_SIZE}, Gradient Acc Steps: {GRADIENT_ACCUMULATION_STEPS}, Max Seq Len: {MAX_LENGTH}")
 
 # %%
 train_dataloader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
@@ -120,7 +138,7 @@ def mask_non_assistant_response(model_inputs, tokenizer):
 
 # set up optimizer
 optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS, eta_min=1e-6)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader), eta_min=1e-6)
 
 train_loss_history = [] # for each step (batch)
 eval_loss_history = [] # for each epoch (average over batches)
@@ -159,6 +177,22 @@ for epoch in range(EPOCHS):
             scheduler.step()
             optimizer.zero_grad(set_to_none=True)
         train_loss_history.append(loss.detach().item())
+        
+        if accumulation_step % 1910 == 0:
+            # example generation
+            _prompt = "Describe the property of sin and cos functions. List the properties one by one."
+            _message = [{"role": "user", "content": _prompt}]
+            inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
+            with torch.no_grad():
+                generated_ids = model.generate(
+                    **inputs,
+                    max_new_tokens=512,
+                    do_sample=True,
+                    temperature=0.7,
+                    top_p=0.9,
+                )
+            generated_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+            print(f"Example Generation at Epoch {epoch + 1} Step {accumulation_step + 1}:\n{generated_text}\n")
 
     if accumulation_step % GRADIENT_ACCUMULATION_STEPS != 0:
         optimizer.step()
@@ -205,21 +239,6 @@ for epoch in range(EPOCHS):
         model.save_pretrained(f"checkpoints/{model_name}_sft_epoch_{epoch + 1}")
         tokenizer.save_pretrained(f"checkpoints/{model_name}_sft_epoch_{epoch + 1}")
         print(f"New best model saved with eval loss {best_eval_loss:.4f}")
-    
-    # example generation
-    _prompt = "Describe the property of sin and cos functions. List the properties one by one."
-    _message = [{"role": "user", "content": _prompt}]
-    inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
-    with torch.no_grad():
-        generated_ids = model.generate(
-            **inputs,
-            max_new_tokens=512,
-            do_sample=True,
-            temperature=0.7,
-            top_p=0.9,
-        )
-    generated_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-    print(f"Example Generation at Epoch {epoch + 1}:\n{generated_text}\n")
     
 
 # plot training and eval loss curves

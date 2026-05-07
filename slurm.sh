@@ -6,8 +6,8 @@
 #SBATCH -t 06:30:00             # total run time limit (HH:MM:SS)
 #SBATCH --mem=32000MB           # INCREASED from 16GB to 32GB
 #SBATCH --job-name='DPO'
-#SBATCH --output=slurm_logs/R-%x.%j.out
-#SBATCH --error=slurm_logs/R-%x.%j.err
+#SBATCH --output=slurm_logs/R-%x.%j/log.out
+#SBATCH --error=slurm_logs/R-%x.%j/log.err
 # Force unbuffered output
 export PYTHONUNBUFFERED=1
 export PYTHONIOENCODING=utf-8
@@ -24,8 +24,13 @@ echo "GPU Information (from host):"
 nvidia-smi
 echo ""
 
-module load miniconda3/23.11.0s
-source /oscar/runtime/software/external/miniconda3/23.11.0/etc/profile.d/conda.sh
+module load miniforge3/25.3.0-3
+source ${MAMBA_ROOT_PREFIX}/etc/profile.d/conda.sh
+# source /oscar/runtime/software/external/miniconda3/23.11.0/etc/profile.d/conda.sh
+# conda init
 conda activate dpo
+
+# check pytorch version
+python -c "import torch; print(f'PyTorch version: {torch.__version__}')"
 
 python -u run_sft.py
