@@ -1,3 +1,6 @@
+# %% [markdown]
+# # Performs SFT on a pretrained model
+
 # %%
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import LoraConfig, get_peft_model
@@ -182,7 +185,7 @@ def plot_loss_curves():
 
     ax.set_xlabel('Step Number')
     ax.set_ylabel('Loss')
-    ax.set_title(f'Loss Curves for {model_name} SFT Training')
+    ax.set_title(f'Loss Curves for {model_name.split("/")[-1]} SFT Training')
     ax.legend()
     ax.grid(False)
     # change y to log scale
