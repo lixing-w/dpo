@@ -141,9 +141,56 @@ optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader), eta_min=1e-6)
 
 train_loss_history = [] # for each step (batch)
-eval_loss_history = [] # for each epoch (average over batches)
+eval_loss_history = [] # for each validation step
+eval_loss_steps = [] # step numbers when validation was performed
 epoch_end_steps = [] # to keep track of step number at the end of each epoch for plotting
 best_eval_loss = float('inf')
+EVAL_INTERVAL = 1000  # validate every 1000 steps
+global_step = 0
+
+def plot_loss_curves():
+    # plot training and eval loss curves
+    train_loss_history_arr = np.array(train_loss_history)
+    eval_loss_history_arr = np.array(eval_loss_history)
+    eval_loss_steps_arr = np.array(eval_loss_steps)
+    step_num_history_arr = np.arange(1, len(train_loss_history) + 1)
+
+    # plot and save the training and validation loss curves
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(step_num_history_arr, train_loss_history_arr, label='Training Loss', alpha=0.7)
+    ax.plot(eval_loss_steps_arr, eval_loss_history_arr, label='Validation Loss', marker='o', markersize=4, alpha=0.7)
+
+    # add vertical lines at epoch boundaries
+    for step_idx in epoch_end_steps:
+        ax.axvline(step_idx, color='gray', ls='--', lw=0.6, alpha=0.35)
+
+    # add epoch ticks on the top axis
+    if len(epoch_end_steps) > 0:
+        epoch_end_steps_arr = np.array(epoch_end_steps)
+        epoch_ids = np.arange(1, len(epoch_end_steps_arr) + 1)
+        max_labels = 12
+        stride = max(1, int(np.ceil(len(epoch_end_steps_arr) / max_labels)))
+        top_ticks = epoch_end_steps_arr[::stride]
+        top_labels = epoch_ids[::stride]
+        top_ax = ax.secondary_xaxis('top')
+        top_ax.set_xticks(top_ticks)
+        top_ax.set_xticklabels(top_labels)
+        top_ax.set_xlabel('Epoch')
+
+    # add a horizontal line showing minimum val loss
+    ax.axhline(y=best_eval_loss, color='black', linestyle='--', linewidth=1, alpha=0.2, label=f'Min Eval Loss: {best_eval_loss:.4g}')
+
+    ax.set_xlabel('Step Number')
+    ax.set_ylabel('Loss')
+    ax.set_title(f'Loss Curves for {model_name} SFT Training')
+    ax.legend()
+    ax.grid(False)
+    # change y to log scale
+    ax.set_yscale('log')
+    # ax.set_ylim(0.0001, 0.01)
+    fig.tight_layout()
+    fig.savefig(f"sft_loss_curve.png")
+    
 for epoch in range(EPOCHS):
     # train
     pbar = tqdm(train_dataloader, desc=f"Train Epoch {epoch + 1}/{EPOCHS}")
@@ -177,8 +224,51 @@ for epoch in range(EPOCHS):
             scheduler.step()
             optimizer.zero_grad(set_to_none=True)
         train_loss_history.append(loss.detach().item())
+        global_step += 1
         
-        if accumulation_step % 1910 == 0:
+        # Step-based validation
+        if global_step % EVAL_INTERVAL == 0:
+            pbar_eval = tqdm(test_dataloader, desc=f"Eval at Step {global_step}", leave=False)
+            eval_loss = 0
+            eval_batch_count = 0
+            for batch_eval in pbar_eval:
+                conversations = unbatch_chat_messages(batch_eval["messages"])
+                texts = [
+                    tokenizer.apply_chat_template(
+                        messages,
+                        tokenize=False,
+                        add_generation_prompt=False,
+                    )
+                    for messages in conversations
+                ]
+                model_inputs = tokenizer(
+                    texts,
+                    return_tensors="pt",
+                    padding=True,
+                    truncation=True,
+                    max_length=MAX_LENGTH,
+                ).to(model.device)
+                labels = mask_non_assistant_response(model_inputs, tokenizer)
+                with torch.no_grad():
+                    outputs = model(**model_inputs, labels=labels)
+                    loss = outputs.loss
+                    eval_loss += loss.detach().item()
+                    eval_batch_count += 1
+            eval_loss /= eval_batch_count
+            eval_loss_history.append(eval_loss)
+            eval_loss_steps.append(global_step)
+            tqdm.write(f"Step {global_step}: Train Loss={train_loss_history[-1]:.4f}, Eval Loss={eval_loss:.4f}")
+            
+            # update best eval loss
+            if eval_loss < best_eval_loss:
+                best_eval_loss = eval_loss
+                model.save_pretrained(f"checkpoints/{model_name}_sft_step_{global_step}")
+                tokenizer.save_pretrained(f"checkpoints/{model_name}_sft_step_{global_step}")
+                print(f"New best model saved with eval loss {best_eval_loss:.4f}")
+            
+            plot_loss_curves()
+        
+        if global_step % 1910 == 0:
             # example generation
             _prompt = "Describe the property of sin and cos functions. List the properties one by one."
             _message = [{"role": "user", "content": _prompt}]
@@ -201,90 +291,8 @@ for epoch in range(EPOCHS):
 
     epoch_end_steps.append(len(train_loss_history))
     
-    # eval
-    pbar = tqdm(test_dataloader, desc=f"Eval Epoch {epoch + 1}/{EPOCHS}")
-    eval_avg_loss = 0
-    eval_batch_count = 0
-    for batch in pbar:
-        conversations = unbatch_chat_messages(batch["messages"])
-        texts = [
-            tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=False,
-            )
-            for messages in conversations
-        ]
-        model_inputs = tokenizer(
-            texts,
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=MAX_LENGTH,
-        ).to(model.device)
-        labels = mask_non_assistant_response(model_inputs, tokenizer)
-        with torch.no_grad():
-            outputs = model(**model_inputs, labels=labels)
-            loss = outputs.loss
-            eval_avg_loss += loss.detach().item()
-            eval_batch_count += 1
-    eval_avg_loss /= eval_batch_count
-    eval_loss_history.append(eval_avg_loss)
-    tqdm.write(f"Epoch {epoch + 1} Eval Loss: {eval_avg_loss:.4f}")
 
-    # update best eval loss
-    if eval_avg_loss < best_eval_loss:
-        best_eval_loss = eval_avg_loss
-        # save state dict of the model
-        model.save_pretrained(f"checkpoints/{model_name}_sft_epoch_{epoch + 1}")
-        tokenizer.save_pretrained(f"checkpoints/{model_name}_sft_epoch_{epoch + 1}")
-        print(f"New best model saved with eval loss {best_eval_loss:.4f}")
-    
 
-# plot training and eval loss curves
-# repeat eval_loss_history to match other histories for plotting
-train_loss_history = np.array(train_loss_history)
-eval_loss_history = np.array(eval_loss_history)
-eval_loss_history = np.repeat(eval_loss_history, int(len(train_loss_history) / len(eval_loss_history)))
-step_num_history = np.arange(1, len(train_loss_history) + 1)
-
-# plot and save the training and validation loss curves
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(step_num_history, train_loss_history, label='Training Loss', alpha=0.7)
-ax.plot(step_num_history, eval_loss_history, label='Validation Loss', alpha=0.7)
-
-# add vertical lines at epoch boundaries
-for step_idx in epoch_end_steps:
-    ax.axvline(step_idx, color='gray', ls='--', lw=0.6, alpha=0.35)
-
-# add epoch ticks on the top axis
-if len(epoch_end_steps) > 0:
-    epoch_end_steps = np.array(epoch_end_steps)
-    epoch_ids = np.arange(1, len(epoch_end_steps) + 1)
-    max_labels = 12
-    stride = max(1, int(np.ceil(len(epoch_end_steps) / max_labels)))
-    top_ticks = epoch_end_steps[::stride]
-    top_labels = epoch_ids[::stride]
-    top_ax = ax.secondary_xaxis('top')
-    top_ax.set_xticks(top_ticks)
-    top_ax.set_xticklabels(top_labels)
-    top_ax.set_xlabel('Epoch')
-
-# add a horizontal line showing minimum val loss
-ax.axhline(y=best_eval_loss, color='black', linestyle='--', linewidth=1, alpha=0.2, label=f'Min Eval Loss: {best_eval_loss:.4g}')
-
-ax.set_xlabel('Step Number')
-ax.set_ylabel('Loss')
-ax.set_title(f'Loss Curves for {model_name.split( "/" )[ -1 ]}')
-ax.legend()
-ax.grid(False)
-# change y to log scale
-ax.set_yscale('log')
-# ax.set_ylim(0.0001, 0.01)
-fig.tight_layout()
-fig.savefig(f"sft_loss_curve.png")
-plt.show()
-            
 
 # %%
 # # check out the injected lora layers!

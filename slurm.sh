@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1               # node count
+#SBATCH --nodelist=gpu3001      # the L40S GPU!!
 #SBATCH -p gpu --gres=gpu:1     # number of gpus per node
 #SBATCH --ntasks-per-node=1     # total number of tasks across all nodes
 #SBATCH --cpus-per-task=8       # cpu-cores per task (>1 if multi-threaded tasks)
