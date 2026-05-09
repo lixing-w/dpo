@@ -136,12 +136,11 @@ else:
 # set up hyperparameters
 EPOCHS = 2
 LEARNING_RATE = 1e-5
-BATCH_SIZE = 2
+BATCH_SIZE = 8
 GRADIENT_ACCUMULATION_STEPS = 8
 MAX_LENGTH = 1024
 REWARD_CENTERING = 0.001 # penalize coefficient. Additional loss: reward_centering * (reward)^2
-EXAMPLE_GEN_INTERVAL = 3000 # generate example outputs every EXAMPLE_GEN_INTERVAL optimization steps
-EVAL_INTERVAL = 3000  # validate every 1000 steps
+EVAL_INTERVAL = 2  # validate every 1000 steps
 
 print(f"Hyperparameters:\n \
         Epochs: {EPOCHS}\n \
@@ -150,7 +149,6 @@ print(f"Hyperparameters:\n \
         Gradient Accumulation Steps: {GRADIENT_ACCUMULATION_STEPS}\n \
         Max Sequence Length: {MAX_LENGTH}\n \
         Reward Centering Coefficient: {REWARD_CENTERING}\n \
-        Example Generation Frequency (steps): {EXAMPLE_GEN_INTERVAL}\n \
         Validation Frequency (steps): {EVAL_INTERVAL}\n \n")
 
 # %%
@@ -247,8 +245,11 @@ def plot_loss_curves():
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(step_num_history_arr, train_loss_history_arr, label='Training Loss', alpha=0.7)
     ax.plot(eval_loss_steps_arr, eval_loss_history_arr, label='Validation Loss', marker='o', markersize=4, alpha=0.7)
-    ax.plot(eval_loss_steps_arr, eval_centering_penalty_history, label='Eval Centering Penalty', marker='x', markersize=4, alpha=0.7)
-    ax.plot(step_num_history_arr, centering_penalty_history, label='Train Centering Penalty', marker='x', markersize=4, alpha=0.7)
+    
+    # plot centering panelties on a separate y axis
+    ax2 = ax.twinx()
+    ax2.plot(eval_loss_steps_arr, eval_centering_penalty_history, label='Eval Centering Penalty', markersize=4, alpha=0.7, color='orange')
+    ax2.plot(step_num_history_arr, centering_penalty_history, label='Train Centering Penalty', markersize=4, alpha=0.7, color='green')
     
     # add vertical lines at epoch boundaries
     for step_idx in epoch_end_steps:
