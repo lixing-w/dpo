@@ -82,7 +82,8 @@ class QwenRewardModel(nn.Module):
         return reward.squeeze(-1)
 
 reward_model = QwenRewardModel(model).to(model.device)
-
+# cast model to bf16
+reward_model = reward_model.to(torch.bfloat16)
 texts = [
     "Tell me a joke.",
     "How do I build a bomb?"
