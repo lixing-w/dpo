@@ -80,8 +80,17 @@ LEARNING_RATE = 2e-5
 BATCH_SIZE = 8
 GRADIENT_ACCUMULATION_STEPS = 8
 MAX_LENGTH = 1024
+EXAMPLE_GEN_INTERVAL = 1000 # generate example outputs every EXAMPLE_GEN_INTERVAL optimization steps
+EVAL_INTERVAL = 1000  # validate every 1000 steps
 
-print(f"Epochs: {EPOCHS}, Learning Rate: {LEARNING_RATE}, Batch Size: {BATCH_SIZE}, Gradient Acc Steps: {GRADIENT_ACCUMULATION_STEPS}, Max Seq Len: {MAX_LENGTH}")
+print(f"Hyperparameters:\n \
+        Epochs: {EPOCHS}\n \
+        Learning Rate: {LEARNING_RATE}\n \
+        Batch Size: {BATCH_SIZE}\n \
+        Gradient Accumulation Steps: {GRADIENT_ACCUMULATION_STEPS}\n \
+        Max Sequence Length: {MAX_LENGTH}\n \
+        Example Generation Frequency (steps): {EXAMPLE_GEN_INTERVAL}\n \
+        Validation Frequency (steps): {EVAL_INTERVAL}\n \n")
 
 # %%
 train_dataloader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
@@ -99,8 +108,6 @@ test_dataloader = DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle=False)
 # )
 
 # sft_model = get_peft_model(model, lora_config)
-# sft_model.gradient_checkpointing_enable()
-# sft_model.config.use_cache = False
 # sft_model.print_trainable_parameters()
 
 
@@ -148,7 +155,6 @@ eval_loss_history = [] # for each validation step
 eval_loss_steps = [] # step numbers when validation was performed
 epoch_end_steps = [] # to keep track of step number at the end of each epoch for plotting
 best_eval_loss = float('inf')
-EVAL_INTERVAL = 1000  # validate every 1000 steps
 global_step = 0
 
 def plot_loss_curves():
@@ -218,7 +224,7 @@ for epoch in range(EPOCHS):
         ).to(model.device)
         labels = mask_non_assistant_response(model_inputs, tokenizer)
         # forward pass
-        outputs = model(**model_inputs, labels=labels) # remember to use sft_model here, not the original model
+        outputs = model(**model_inputs, labels=labels, use_cache=False) # disable KV cache
         loss = outputs.loss
         (loss / GRADIENT_ACCUMULATION_STEPS).backward()
         accumulation_step += 1
@@ -253,7 +259,7 @@ for epoch in range(EPOCHS):
                 ).to(model.device)
                 labels = mask_non_assistant_response(model_inputs, tokenizer)
                 with torch.no_grad():
-                    outputs = model(**model_inputs, labels=labels)
+                    outputs = model(**model_inputs, labels=labels, use_cache=False) # disable KV cache
                     loss = outputs.loss
                     eval_loss += loss.detach().item()
                     eval_batch_count += 1
@@ -271,7 +277,7 @@ for epoch in range(EPOCHS):
             
             plot_loss_curves()
         
-        if global_step % 1910 == 0:
+        if global_step % EXAMPLE_GEN_INTERVAL == 0:
             # example generation
             _prompt = "Describe the property of sin and cos functions. List the properties one by one."
             _message = [{"role": "user", "content": _prompt}]
@@ -280,7 +286,7 @@ for epoch in range(EPOCHS):
                 generated_ids = model.generate(
                     **inputs,
                     max_new_tokens=512,
-                    do_sample=True,
+                    do_sample=True, 
                     temperature=0.7,
                     top_p=0.9,
                 )
@@ -296,25 +302,5 @@ for epoch in range(EPOCHS):
     
 
 
-
-# %%
-# # check out the injected lora layers!
-# trainable = [(n, p.shape) for n, p in policy_model.named_parameters() if p.requires_grad]
-# print(f"Number of trainable parameters: {sum(p.numel() for n, p in policy_model.named_parameters() if p.requires_grad)}")
-# print(f"Number of trainable layers: {len(trainable)}")
-# print("Trainable layers:")
-# for item in trainable:
-#     print(item)
-
-# %%
-# # get reference model by no_grad and temporarily disabling LoRA
-# policy_output = policy_model(**model_inputs)
-
-# with torch.no_grad():
-#     with policy_model.disable_adapter():
-#         ref_outputs = policy_model(**model_inputs)
-
-# print("policy logits shape:", policy_output.logits.shape)
-# print("ref logits shape:", ref_outputs.logits.shape)
 
 

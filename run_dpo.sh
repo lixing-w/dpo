@@ -34,4 +34,4 @@ conda activate dpo
 # check pytorch version
 python -c "import torch; print(f'PyTorch version: {torch.__version__}')"
 
-python -u sft.py
+python -u dpo.py
