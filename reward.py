@@ -140,7 +140,7 @@ BATCH_SIZE = 8
 GRADIENT_ACCUMULATION_STEPS = 8
 MAX_LENGTH = 1024
 REWARD_CENTERING = 0.001 # penalize coefficient. Additional loss: reward_centering * (reward)^2
-EVAL_INTERVAL = 2  # validate every 1000 steps
+EVAL_INTERVAL = 1500  # validate every 1000 steps
 
 print(f"Hyperparameters:\n \
         Epochs: {EPOCHS}\n \
@@ -246,11 +246,13 @@ def plot_loss_curves():
     ax.plot(step_num_history_arr, train_loss_history_arr, label='Training Loss', alpha=0.7)
     ax.plot(eval_loss_steps_arr, eval_loss_history_arr, label='Validation Loss', marker='o', markersize=4, alpha=0.7)
     
-    # plot centering panelties on a separate y axis
+    # plot centering penalties on a separate y axis
     ax2 = ax.twinx()
-    ax2.plot(eval_loss_steps_arr, eval_centering_penalty_history, label='Eval Centering Penalty', markersize=4, alpha=0.7, color='orange')
-    ax2.plot(step_num_history_arr, centering_penalty_history, label='Train Centering Penalty', markersize=4, alpha=0.7, color='green')
-    
+    ax2.plot(eval_loss_steps_arr, eval_centering_penalty_history, label='Eval Centering Penalty', marker='o', markersize=4, alpha=0.7, color='orange')
+    ax2.plot(step_num_history_arr, centering_penalty_history, label='Train Centering Penalty', markersize=4, alpha=0.2, color='green')
+    # set y label for the centering penalty axis
+    ax2.set_ylabel('Centering Penalty')
+    ax2.legend(loc='upper right')
     # add vertical lines at epoch boundaries
     for step_idx in epoch_end_steps:
         ax.axvline(step_idx, color='gray', ls='--', lw=0.6, alpha=0.35)
