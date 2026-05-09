@@ -9,8 +9,8 @@
 #SBATCH --job-name='DPO'
 #SBATCH --output=slurm_logs/R-%x.%j/log.out
 #SBATCH --error=slurm_logs/R-%x.%j/log.err
-# Force unbuffered output
-export PYTHONUNBUFFERED=1
+# # Force unbuffered output
+# export PYTHONUNBUFFERED=1
 export PYTHONIOENCODING=utf-8
 
 echo ""

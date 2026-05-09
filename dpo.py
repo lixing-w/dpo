@@ -79,13 +79,13 @@ else:
 # set up hyperparameters
 EPOCHS = 2
 LEARNING_RATE = 1e-5
-BATCH_SIZE = 1
+BATCH_SIZE = 2
 GRADIENT_ACCUMULATION_STEPS = 8
 MAX_LENGTH = 1024
 BETA = 0.1
 LORA_RANK = 8
-EXAMPLE_GEN_INTERVAL = 1000 # generate example outputs every EXAMPLE_GEN_INTERVAL optimization steps
-EVAL_INTERVAL = 1000  # validate every 1000 steps
+EXAMPLE_GEN_INTERVAL = 3000 # generate example outputs every EXAMPLE_GEN_INTERVAL optimization steps
+EVAL_INTERVAL = 3000  # validate every 1000 steps
 
 print(f"Hyperparameters:\n \
         Epochs: {EPOCHS}\n \
@@ -246,7 +246,8 @@ def plot_loss_curves():
     # add right y-axis for KL divergence
     if len(kl_div_history_arr) > 0:
         ax2 = ax.twinx()
-        ax2.plot(kl_div_steps_arr, kl_div_history_arr, label='KL Divergence', color='orange', marker='s', markersize=4, alpha=0.7)
+        ax2.plot(kl_div_steps_arr, kl_div_history_arr, label='KL Divergence', color='purple', marker='s', markersize=4, alpha=0.7)
+        print(f"kl_div {kl_div_steps_arr, kl_div_history_arr}")
         ax2.set_ylabel('KL Divergence')
         ax2.legend(loc='upper right')
     
@@ -258,8 +259,8 @@ def plot_loss_curves():
     ax.set_title(f'Loss Curves for {model_name.split("/")[-1]} DPO Training')
     ax.legend()
     ax.grid(False)
-    # change y to log scale
-    ax.set_yscale('log')
+    # # change y to log scale
+    # ax.set_yscale('log')
     # ax.set_ylim(0.0001, 0.01)
     fig.tight_layout()
     fig.savefig(f"dpo_loss_curve.png")
@@ -311,11 +312,14 @@ for epoch in range(EPOCHS):
         loss = -torch.log(
             torch.sigmoid(
                 BETA * (
-                    torch.log(lora_win_sentence_log_prob + 1e-8) - torch.log(lora_lose_sentence_log_prob + 1e-8)
-                    - torch.log(ref_win_sentence_log_prob + 1e-8) + torch.log(ref_lose_sentence_log_prob + 1e-8)
+                    lora_win_sentence_log_prob - lora_lose_sentence_log_prob
+                    - ref_win_sentence_log_prob + ref_lose_sentence_log_prob
                 )
             )
         )
+        # here, loss has shape [B], each entry is the loss of i-th batch!
+        # remember batch reduction! take mean of the loss.
+        loss = torch.mean(loss)
         (loss / GRADIENT_ACCUMULATION_STEPS).backward()
         accumulation_step += 1
         if accumulation_step % GRADIENT_ACCUMULATION_STEPS == 0:
@@ -330,6 +334,7 @@ for epoch in range(EPOCHS):
             pbar_eval = tqdm(test_dataloader, desc=f"Eval at Step {global_step}", leave=False)
             eval_loss = 0
             eval_batch_count = 0
+            kl_div = 0
             for batch_eval in pbar_eval:
                 # compute DPO loss on the eval set
                 win_model_inputs_eval = prepare_inputs(batch_eval["chosen"], tokenizer, model.device)
@@ -366,22 +371,24 @@ for epoch in range(EPOCHS):
                     loss = -torch.log(
                         torch.sigmoid(
                             BETA * (
-                                torch.log(lora_win_sentence_log_prob_eval + 1e-8) - torch.log(lora_lose_sentence_log_prob_eval + 1e-8)
-                                - torch.log(ref_win_sentence_log_prob_eval + 1e-8) + torch.log(ref_lose_sentence_log_prob_eval + 1e-8)
+                                lora_win_sentence_log_prob_eval - lora_lose_sentence_log_prob_eval
+                                - ref_win_sentence_log_prob_eval + ref_lose_sentence_log_prob_eval
                             )
                         )
                     )
+                    loss = torch.mean(loss)
                     eval_loss += loss.detach().item()
                     eval_batch_count += 1
                     
                     # compute KL divergence between current model and reference model
-                    kl_div = torch.nn.functional.kl_div(
-                        lora_win_log_prob_eval, ref_win_log_prob_eval, reduction='batchmean'
+                    kl_div += torch.nn.functional.kl_div(
+                        lora_win_log_prob_eval, ref_win_log_prob_eval, reduction='batchmean', log_target=True
                     ) + torch.nn.functional.kl_div(
-                        lora_lose_log_prob_eval, ref_lose_log_prob_eval, reduction='batchmean'
+                        lora_lose_log_prob_eval, ref_lose_log_prob_eval, reduction='batchmean', log_target=True
                     )
-                    kl_div_history.append(kl_div.detach().item())
-                    kl_div_steps.append(global_step)
+            kl_div /= eval_batch_count
+            kl_div_history.append(kl_div.detach().item() / 2.0)
+            kl_div_steps.append(global_step)
             eval_loss /= eval_batch_count
             eval_loss_history.append(eval_loss)
             eval_loss_steps.append(global_step)
