@@ -373,6 +373,15 @@ for epoch in range(EPOCHS):
                     )
                     eval_loss += loss.detach().item()
                     eval_batch_count += 1
+                    
+                    # compute KL divergence between current model and reference model
+                    kl_div = torch.nn.functional.kl_div(
+                        lora_win_log_prob_eval, ref_win_log_prob_eval, reduction='batchmean'
+                    ) + torch.nn.functional.kl_div(
+                        lora_lose_log_prob_eval, ref_lose_log_prob_eval, reduction='batchmean'
+                    )
+                    kl_div_history.append(kl_div.detach().item())
+                    kl_div_steps.append(global_step)
             eval_loss /= eval_batch_count
             eval_loss_history.append(eval_loss)
             eval_loss_steps.append(global_step)
