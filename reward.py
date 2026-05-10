@@ -344,6 +344,7 @@ for epoch in range(EPOCHS):
             plot_loss_curves()
 
     if accumulation_step % GRADIENT_ACCUMULATION_STEPS != 0:
+        reward_model.train()
         optimizer.step()
         scheduler.step()
         optimizer.zero_grad(set_to_none=True)

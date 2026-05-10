@@ -36,6 +36,7 @@ print(f"Model Name: {model_name}")
 _prompt = "Describe the property of sin and cos functions. List the properties one by one."
 _message = [{"role": "user", "content": _prompt}]
 inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
+model.eval()
 with torch.no_grad():
     generated_ids = model.generate(
         **inputs,
@@ -95,25 +96,6 @@ print(f"Hyperparameters:\n \
 # %%
 train_dataloader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
 test_dataloader = DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle=False)
-
-# %%
-# prepare the model for lora
-# lora_config = LoraConfig(
-#     r=8, # the rank
-#     lora_alpha=16, # the scaling factor
-#     lora_dropout=0.05,
-#     target_modules=["q_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-#     bias="none",
-#     task_type="CAUSAL_LM"
-# )
-
-# sft_model = get_peft_model(model, lora_config)
-# sft_model.print_trainable_parameters()
-
-
-# %%
-# model.save_pretrained(f"checkpoints/{model_name}_sft_epoch_0")
-# model = AutoModelForCausalLM.from_pretrained(f"checkpoints/{model_name}_sft_epoch_0", device_map="auto", dtype=torch.bfloat16, attn_implementation="sdpa")
 
 # %%
 # setup full-finetuning training loop for SFT
@@ -205,7 +187,9 @@ for epoch in range(EPOCHS):
     pbar = tqdm(train_dataloader, desc=f"Train Epoch {epoch + 1}/{EPOCHS}")
     optimizer.zero_grad()
     accumulation_step = 0
+    
     for batch in pbar:
+        model.train()
         conversations = unbatch_chat_messages(batch["messages"])
         texts = [
             tokenizer.apply_chat_template(
@@ -237,6 +221,7 @@ for epoch in range(EPOCHS):
         
         # Step-based validation
         if global_step % EVAL_INTERVAL == 0:
+            model.eval()
             pbar_eval = tqdm(test_dataloader, desc=f"Eval at Step {global_step}", leave=False)
             eval_loss = 0
             eval_batch_count = 0
@@ -279,6 +264,7 @@ for epoch in range(EPOCHS):
         
         if global_step % EXAMPLE_GEN_INTERVAL == 0:
             # example generation
+            model.eval()
             _prompt = "Describe the property of sin and cos functions. List the properties one by one."
             _message = [{"role": "user", "content": _prompt}]
             inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
@@ -294,6 +280,7 @@ for epoch in range(EPOCHS):
             print(f"Example Generation at Epoch {epoch + 1} Step {accumulation_step + 1}:\n{generated_text}\n")
 
     if accumulation_step % GRADIENT_ACCUMULATION_STEPS != 0:
+        model.train()
         optimizer.step()
         scheduler.step()
         optimizer.zero_grad(set_to_none=True)
