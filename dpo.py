@@ -38,6 +38,9 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 print(f"Model Name: {model_name}")
 
+
+
+# %%
 class QwenRewardModel(nn.Module):
     def __init__(self, base_model):
         super().__init__()
@@ -46,6 +49,20 @@ class QwenRewardModel(nn.Module):
         self.reward_head = nn.Linear(hidden_size, 1, bias=False)
 
     def forward(self, model_inputs):
+        attention_mask = model_inputs["attention_mask"]
+        # with left padding, and batch gen padding on the right, the sequence might look like
+        # [eos, eos, eos, (useful content in the middle), eos eos eos eos]
+        # and cuz we use eos as pad token
+        # find the last valid (non-padding) position for each sequence
+        idx = torch.where(attention_mask == 1, torch.arange(attention_mask.size(1)).to(self.model.device), -1).max(dim=1).values
+        
+        last_token_ids = model_inputs['input_ids'][torch.arange(attention_mask.size(0)), idx]
+        print(last_token_ids)
+        # ensure that the reward head sees the terminating id == 198, otherwise behavior is inconsistent with its training
+        model_inputs['input_ids'][torch.arange(attention_mask.size(0)), idx] = 198
+        if not torch.all(last_token_ids == model_inputs['input_ids'][torch.arange(attention_mask.size(0)), idx]):
+            print("Warning: last token ids set to 198 for correct evaluation.")
+
         outputs = self.model(
             **model_inputs,
             output_hidden_states=False,
@@ -54,15 +71,8 @@ class QwenRewardModel(nn.Module):
             use_cache=False,
         )
         hidden_states = outputs.last_hidden_state
-        attention_mask = model_inputs.get("attention_mask", None)
-        if attention_mask is not None:
-            # with left padding, the last token is at the rightmost position
-            # find the last valid (non-padding) position for each sequence
-            seq_lengths = attention_mask.sum(dim=1) - 1  # subtract 1 to get 0-indexed position
-            last_hidden = hidden_states[torch.arange(hidden_states.size(0)), seq_lengths]
-            print(f"Example Last token pos at input: {model_inputs['input_ids'][0][seq_lengths[0]]}")
-        else:
-            raise ValueError("Attention mask is required to determine the last valid token position.")
+        last_hidden = hidden_states[torch.arange(hidden_states.size(0)), idx]
+        
         reward = self.reward_head(last_hidden)
         return reward.squeeze(-1)
 
@@ -76,16 +86,27 @@ reward_base_model = AutoModelForCausalLM.from_pretrained(
 )
 reward_model = QwenRewardModel(reward_base_model)
 reward_head_path = Path("checkpoints") / reward_model_name / "reward_head.pt"
-reward_model.load_state_dict(torch.load(reward_head_path, map_location=next(reward_model.parameters()).device), strict=False)
+# separately load reward head
+reward_model.reward_head.load_state_dict(torch.load(reward_head_path, map_location=next(reward_model.parameters()).device), strict=True)
 reward_model = reward_model.to(torch.bfloat16).to(device)
 reward_model.eval()
 print(f"Reward Model Name: {reward_model_name}")
 
 # %%
 #test raw model
-_prompt = "Describe the property of sin and cos functions. List the properties one by one."
-_message = [{"role": "user", "content": _prompt}]
-inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
+_prompts = ["Hi who are you?", "1+1=?"]
+texts = [
+    tokenizer.apply_chat_template([{"role": "user", "content": _prompt}], tokenize=False, add_generation_prompt=True, return_tensors="pt")
+    for _prompt in _prompts
+]
+
+inputs = tokenizer(
+    texts,
+    return_tensors="pt",
+    padding_side="left",
+    padding=True,
+).to(device)
+
 model.eval()
 with torch.no_grad():
     generated_ids = model.generate(
@@ -96,19 +117,20 @@ with torch.no_grad():
         top_p=0.9,
     )
 generated_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=False)
-print(f"Raw Model Generation:\n{generated_text}\n")
+print("Raw Model Generation:\n")
+for c in generated_text:
+    print(c) # you see long tails of eof tokens, because this is batch generation, they are "padding"
+
 
 
 # %%
-# pass model output through reward model
-reward_inputs = reward_tokenizer(
-    generated_text,
-    return_tensors="pt",
-).to(next(reward_model.parameters()).device)
 reward_model.eval()
+reward_inputs = reward_tokenizer(generated_text, return_tensors="pt").to(next(reward_model.parameters()).device)
+# manually set attention mask to ignore eof (id == 151643)
+reward_inputs['attention_mask'][reward_inputs['input_ids'] == 151643] = 0
 with torch.no_grad():
-    reward = reward_model(reward_inputs)
-print(reward)
+    rewards = reward_model(reward_inputs)
+print(rewards)
 
 # %%
 # load dataset 
@@ -186,9 +208,6 @@ model.print_trainable_parameters()
 trainable = [(n, p.shape) for n, p in model.named_parameters() if p.requires_grad]
 print(f"Number of trainable parameters: {sum(p.numel() for n, p in model.named_parameters() if p.requires_grad)}")
 print(f"Number of trainable layers: {len(trainable)}")
-print("Trainable layers:")
-for item in trainable:
-    print(item)
 
 # %%
 # get reference model by no_grad and temporarily disabling LoRA
@@ -207,10 +226,6 @@ with torch.no_grad():
 print("policy logits shape:", policy_output.logits.shape)
 print("ref logits shape:", ref_outputs.logits.shape)
 print(policy_output.logits)
-
-# %%
-# model.save_pretrained(f"checkpoints/{model_name}_sft_epoch_0")
-# model = AutoModelForCausalLM.from_pretrained(f"checkpoints/{model_name}_sft_epoch_0", device_map="auto", dtype=torch.bfloat16, attn_implementation="sdpa")
 
 # %%
 # define train helpers
@@ -479,10 +494,10 @@ for epoch in range(EPOCHS):
             # now, generate for several prompts in test set and evaluate the reward win rate against reference model
             win_count = 0
             total_count = 0
-            # use the first 64 prompts
+            # use the first 32 prompts
             pbar_eval = tqdm(test_dataloader, desc=f"Win Eval at Step {global_step}", leave=False)
             for batch_eval in pbar_eval:
-                if total_count > 64:
+                if total_count > 32:
                     break
                 prompts = batch_eval["prompt"]
                 # apply prompt processing
@@ -493,12 +508,13 @@ for epoch in range(EPOCHS):
                     model.eval()
                     generated_ids = model.generate(
                         **inputs,
-                        max_new_tokens=512,
+                        max_new_tokens=1536,
                         do_sample=False, # deterministic decoding for reward evaluation
-                        eos_token_id=tokenizer.eos_token_id,  # stop at endoftext to avoid spurious padding
                     )
                     generated_texts = tokenizer.batch_decode(generated_ids, skip_special_tokens=False)
-                    reward_inputs = reward_tokenizer(generated_texts, return_tensors="pt", padding_side='left', padding=True, truncation=True, max_length=MAX_LENGTH).to(next(reward_model.parameters()).device)
+                    reward_inputs = reward_tokenizer(generated_texts, return_tensors="pt", padding=True, truncation=True, max_length=MAX_LENGTH).to(next(reward_model.parameters()).device)
+                    # manually set attention mask to ignore eof (id == 151643)
+                    reward_inputs['attention_mask'][reward_inputs['input_ids'] == 151643] = 0
                     rewards = reward_model(reward_inputs)
                 # compute reward for reference model outputs
                 with torch.no_grad():
@@ -506,11 +522,12 @@ for epoch in range(EPOCHS):
                         model.eval()
                         ref_generated_ids = model.generate(
                             **inputs,
-                            max_new_tokens=512,
-                            eos_token_id=tokenizer.eos_token_id,  # stop at endoftext to avoid spurious padding
+                            max_new_tokens=1536,
                         )
                     ref_generated_texts = tokenizer.batch_decode(ref_generated_ids, skip_special_tokens=False)
-                    ref_reward_inputs = reward_tokenizer(ref_generated_texts, return_tensors="pt", padding_side='left', padding=True, truncation=True, max_length=MAX_LENGTH).to(next(reward_model.parameters()).device)
+                    ref_reward_inputs = reward_tokenizer(ref_generated_texts, return_tensors="pt", padding=True, truncation=True, max_length=MAX_LENGTH).to(next(reward_model.parameters()).device)
+                    # manually set attention mask to ignore eof (id == 151643)
+                    ref_reward_inputs['attention_mask'][ref_reward_inputs['input_ids'] == 151643] = 0
                     ref_rewards = reward_model(ref_reward_inputs)
                 # compute win rate
                 win_count += torch.sum((rewards > ref_rewards).float()).item()
