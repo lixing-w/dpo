@@ -35,7 +35,6 @@ print(model)
 # %%
 # defines a reward model. ignore lm_head, use reward_head directly on last hidden states
 
-
 import torch.nn as nn
 
 class QwenRewardModel(nn.Module):
@@ -45,9 +44,7 @@ class QwenRewardModel(nn.Module):
         # Keep only the transformer backbone
         self.model = base_model.model
 
-        hidden_size = base_model.config.hidden_size  # 896
-
-        # Scalar reward head
+        hidden_size = base_model.config.hidden_size
         self.reward_head = nn.Linear(hidden_size, 1, bias=False)
 
     def forward(self, model_inputs):
@@ -59,30 +56,19 @@ class QwenRewardModel(nn.Module):
             use_cache=False,
         )
 
-        # last_hidden_state:
-        # [batch_size, seq_len, hidden_size]
         hidden_states = outputs.last_hidden_state
 
-        # Get final token hidden state for each sequence
-        # Usually use the last non-padding token
         attention_mask = model_inputs.get("attention_mask", None)
         if attention_mask is not None:
             seq_lengths = attention_mask.sum(dim=1) - 1
-            last_hidden = hidden_states[
-                torch.arange(hidden_states.size(0)),
-                seq_lengths
-            ]
+            last_hidden = hidden_states[torch.arange(hidden_states.size(0)), seq_lengths]
         else:
             last_hidden = hidden_states[:, -1]
 
-        # reward shape: [batch_size, 1]
         reward = self.reward_head(last_hidden)
-
-        # squeeze to [batch_size]
         return reward.squeeze(-1)
 
 reward_model = QwenRewardModel(model).to(model.device)
-# cast model to bf16
 reward_model = reward_model.to(torch.bfloat16)
 texts = [
     "Tell me a joke.",
@@ -205,12 +191,12 @@ def prepare_inputs(messages, tokenizer, device):
 
 
 # %%
-# setup full-finetuning training loop for SFT
+# setup full-finetuning training loop for reward modeling
 from tqdm import tqdm
 import torch.optim as optim
 
-# set up optimizer
-optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
+# optimize both backbone and reward head
+optimizer = optim.AdamW(reward_model.parameters(), lr=LEARNING_RATE)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader), eta_min=1e-6)
 
 train_loss_history = [] # for each step (batch)
@@ -278,6 +264,8 @@ for epoch in range(EPOCHS):
     optimizer.zero_grad()
     accumulation_step = 0
     for batch in pbar:
+        reward_model.train() # don't forget to set reward model to train mode!!!
+        
         win_model_inputs = prepare_inputs(batch["chosen"], tokenizer, model.device)
         lose_model_inputs = prepare_inputs(batch["rejected"], tokenizer, model.device)
         
@@ -308,11 +296,12 @@ for epoch in range(EPOCHS):
         
         # Step-based validation
         if global_step % EVAL_INTERVAL == 0:
+            reward_model.eval()
             pbar_eval = tqdm(test_dataloader, desc=f"Eval at Step {global_step}", leave=False)
             eval_loss = 0
             eval_win_rate = 0
             eval_batch_count = 0
-            kl_div = 0
+
             for batch_eval in pbar_eval:
                 # compute DPO loss on the eval set
                 win_model_inputs_eval = prepare_inputs(batch_eval["chosen"], tokenizer, model.device)
@@ -346,10 +335,12 @@ for epoch in range(EPOCHS):
             # update best eval loss
             if eval_loss < best_eval_loss:
                 best_eval_loss = eval_loss
-                model.save_pretrained(f"checkpoints/{model_name}_reward_step_{global_step}")
-                tokenizer.save_pretrained(f"checkpoints/{model_name}_reward_step_{global_step}")
+                checkpoint_dir = f"checkpoints/{model_name}_reward_step_{global_step}"
+                model.save_pretrained(checkpoint_dir)
+                tokenizer.save_pretrained(checkpoint_dir)
+                torch.save(reward_model.reward_head.state_dict(), f"{checkpoint_dir}/reward_head.pt")
                 print(f"New best model saved with eval loss {best_eval_loss:.4f}")
-            
+
             plot_loss_curves()
 
     if accumulation_step % GRADIENT_ACCUMULATION_STEPS != 0:
@@ -358,8 +349,6 @@ for epoch in range(EPOCHS):
         optimizer.zero_grad(set_to_none=True)
 
     epoch_end_steps.append(len(train_loss_history))
-    
-
 
 
 
