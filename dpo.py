@@ -16,10 +16,20 @@ import numpy as np
 # %pip install transformers==5.5.4 peft==0.19.1 matplotlib
 
 # %%
+# set up torch device
+if torch.cuda.is_available():
+    device = torch.device( "cuda" )
+elif torch.backends.mps.is_available():
+    device = torch.device( "mps" )
+else:
+    device = torch.device( "cpu" )
+    
 # load tokenizer and model
-model_name = "Qwen/Qwen2.5-0.5B_sft_step_13000"
+from pathlib import Path
+import torch.nn as nn
 
-tokenizer = AutoTokenizer.from_pretrained("checkpoints/" + model_name) # load from local checkpoint
+model_name = "Qwen/Qwen2.5-0.5B_sft_step_13000"
+tokenizer = AutoTokenizer.from_pretrained("checkpoints/" + model_name)
 model = AutoModelForCausalLM.from_pretrained(
     "checkpoints/" + model_name,
     dtype=torch.bfloat16,
@@ -28,11 +38,52 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 print(f"Model Name: {model_name}")
 
+class QwenRewardModel(nn.Module):
+    def __init__(self, base_model):
+        super().__init__()
+        self.model = base_model.model
+        hidden_size = base_model.config.hidden_size
+        self.reward_head = nn.Linear(hidden_size, 1, bias=False)
+
+    def forward(self, model_inputs):
+        outputs = self.model(
+            **model_inputs,
+            output_hidden_states=False,
+            return_dict=True,
+            labels=None,
+            use_cache=False,
+        )
+        hidden_states = outputs.last_hidden_state
+        attention_mask = model_inputs.get("attention_mask", None)
+        if attention_mask is not None:
+            seq_lengths = attention_mask.sum(dim=1) - 1
+            last_hidden = hidden_states[torch.arange(hidden_states.size(0)), seq_lengths]
+        else:
+            last_hidden = hidden_states[:, -1]
+        reward = self.reward_head(last_hidden)
+        return reward.squeeze(-1)
+
+reward_model_name = "Qwen/Qwen2.5-0.5B_sft_step_13000_reward_step_7000"
+reward_tokenizer = AutoTokenizer.from_pretrained("checkpoints/" + reward_model_name)
+reward_base_model = AutoModelForCausalLM.from_pretrained(
+    "checkpoints/" + reward_model_name,
+    dtype=torch.bfloat16,
+    device_map="auto",
+    attn_implementation="sdpa"
+)
+reward_model = QwenRewardModel(reward_base_model)
+reward_head_path = Path("checkpoints") / reward_model_name / "reward_head.pt"
+reward_model.load_state_dict(torch.load(reward_head_path, map_location=next(reward_model.parameters()).device), strict=False)
+reward_model = reward_model.to(torch.bfloat16).to(device)
+reward_model.eval()
+print(f"Reward Model Name: {reward_model_name}")
+
 # %%
 #test raw model
 _prompt = "Describe the property of sin and cos functions. List the properties one by one."
 _message = [{"role": "user", "content": _prompt}]
 inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
+model.eval()
 with torch.no_grad():
     generated_ids = model.generate(
         **inputs,
@@ -43,6 +94,18 @@ with torch.no_grad():
     )
 generated_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
 print(f"Raw Model Generation:\n{generated_text}\n")
+
+
+# %%
+# pass model output through reward model
+reward_inputs = reward_tokenizer(
+    generated_text,
+    return_tensors="pt",
+).to(next(reward_model.parameters()).device)
+reward_model.eval()
+with torch.no_grad():
+    reward = reward_model(reward_inputs)
+print(reward)
 
 # %%
 # load dataset 
@@ -68,14 +131,6 @@ train_ds[0]["chosen"]
 train_ds[0]["rejected"]
 
 # %%
-# set up torch device
-if torch.cuda.is_available():
-    device = torch.device( "cuda" )
-elif torch.backends.mps.is_available():
-    device = torch.device( "mps" )
-else:
-    device = torch.device( "cpu" )
-
 # set up hyperparameters
 EPOCHS = 2
 LEARNING_RATE = 1e-5
@@ -85,7 +140,7 @@ MAX_LENGTH = 1024
 BETA = 0.1
 LORA_RANK = 8
 EXAMPLE_GEN_INTERVAL = 3000 # generate example outputs every EXAMPLE_GEN_INTERVAL optimization steps
-EVAL_INTERVAL = 3000  # validate every 1000 steps
+EVAL_INTERVAL = 2  # validate every 1000 steps
 
 print(f"Hyperparameters:\n \
         Epochs: {EPOCHS}\n \
@@ -118,9 +173,6 @@ model.print_trainable_parameters()
 
 
 # %%
-
-
-# %%
 # check out the injected lora layers!
 trainable = [(n, p.shape) for n, p in model.named_parameters() if p.requires_grad]
 print(f"Number of trainable parameters: {sum(p.numel() for n, p in model.named_parameters() if p.requires_grad)}")
@@ -135,8 +187,10 @@ prompt = "Describe the property of sin and cos functions. List the properties on
 text = tokenizer.apply_chat_template([{"role": "user", "content": prompt}], add_generation_prompt=True, return_tensors="pt").to(model.device)
 model_inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
+model.eval()
 policy_output = model(**model_inputs)
 
+model.eval()
 with torch.no_grad():
     with model.disable_adapter():
         ref_outputs = model(**model_inputs)
@@ -208,29 +262,33 @@ eval_loss_history = [] # for each validation step
 eval_loss_steps = [] # step numbers when validation was performed
 epoch_end_steps = [] # to keep track of step number at the end of each epoch for plotting
 kl_div_history = [] # compare the output distribution of the current model and the reference model at each validation step
-kl_div_steps = [] 
+win_rate_history = [] # track the win rate of the current model against the reference model at each validation step
 best_eval_loss = float('inf')
 global_step = 0
 
 def plot_loss_curves():
-    # plot training and eval loss curves
+    # prepare arrays
     train_loss_history_arr = np.array(train_loss_history)
     eval_loss_history_arr = np.array(eval_loss_history)
     eval_loss_steps_arr = np.array(eval_loss_steps)
     step_num_history_arr = np.arange(1, len(train_loss_history) + 1)
     kl_div_history_arr = np.array(kl_div_history)
-    kl_div_steps_arr = np.array(kl_div_steps)
+    win_rate_history_arr = np.array(win_rate_history)
     
-    # plot and save the training and validation loss curves
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(step_num_history_arr, train_loss_history_arr, label='Training Loss', alpha=0.7)
-    ax.plot(eval_loss_steps_arr, eval_loss_history_arr, label='Validation Loss', marker='o', markersize=4, alpha=0.7)
+    # create two subplots
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
     
-    # add vertical lines at epoch boundaries
+    # subplot 1: training and validation losses
+    ax1.plot(step_num_history_arr, train_loss_history_arr, label='Training Loss', alpha=0.7)
+    ax1.plot(eval_loss_steps_arr, eval_loss_history_arr, label='Validation Loss', marker='o', markersize=4, alpha=0.7)
+    ax1.axhline(y=best_eval_loss, color='black', linestyle='--', linewidth=1, alpha=0.2, label=f'Min Eval Loss: {best_eval_loss:.4g}')
+    
+    # add vertical lines at epoch boundaries for both subplots
     for step_idx in epoch_end_steps:
-        ax.axvline(step_idx, color='gray', ls='--', lw=0.6, alpha=0.35)
-
-    # add epoch ticks on the top axis
+        ax1.axvline(step_idx, color='gray', ls='--', lw=0.6, alpha=0.35)
+        ax2.axvline(step_idx, color='gray', ls='--', lw=0.6, alpha=0.35)
+    
+    # add epoch ticks on top axis for subplot 1
     if len(epoch_end_steps) > 0:
         epoch_end_steps_arr = np.array(epoch_end_steps)
         epoch_ids = np.arange(1, len(epoch_end_steps_arr) + 1)
@@ -238,30 +296,36 @@ def plot_loss_curves():
         stride = max(1, int(np.ceil(len(epoch_end_steps_arr) / max_labels)))
         top_ticks = epoch_end_steps_arr[::stride]
         top_labels = epoch_ids[::stride]
-        top_ax = ax.secondary_xaxis('top')
-        top_ax.set_xticks(top_ticks)
-        top_ax.set_xticklabels(top_labels)
-        top_ax.set_xlabel('Epoch')
-
-    # add right y-axis for KL divergence
-    if len(kl_div_history_arr) > 0:
-        ax2 = ax.twinx()
-        ax2.plot(kl_div_steps_arr, kl_div_history_arr, label='KL Divergence', color='purple', marker='s', markersize=4, alpha=0.7)
-        print(f"kl_div {kl_div_steps_arr, kl_div_history_arr}")
-        ax2.set_ylabel('KL Divergence')
-        ax2.legend(loc='upper right')
+        top_ax1 = ax1.secondary_xaxis('top')
+        top_ax1.set_xticks(top_ticks)
+        top_ax1.set_xticklabels(top_labels)
+        top_ax1.set_xlabel('Epoch')
     
-    # add a horizontal line showing minimum val loss
-    ax.axhline(y=best_eval_loss, color='black', linestyle='--', linewidth=1, alpha=0.2, label=f'Min Eval Loss: {best_eval_loss:.4g}')
-
-    ax.set_xlabel('Step Number')
-    ax.set_ylabel('Loss')
-    ax.set_title(f'Loss Curves for {model_name.split("/")[-1]} DPO Training')
-    ax.legend()
-    ax.grid(False)
-    # # change y to log scale
-    # ax.set_yscale('log')
-    # ax.set_ylim(0.0001, 0.01)
+    ax1.set_xlabel('Step Number')
+    ax1.set_ylabel('Loss')
+    ax1.set_title(f'Training & Validation Loss - {model_name.split("/")[-1]} DPO')
+    ax1.legend(loc='upper right')
+    ax1.grid(False)
+    
+    # subplot 2: win rate and KL divergence
+    if len(win_rate_history_arr) > 0:
+        ax2.plot(eval_loss_steps_arr, win_rate_history_arr, label='Win Rate', color='green', marker='o', markersize=4, alpha=0.7)
+    if len(kl_div_history_arr) > 0:
+        ax2.plot(eval_loss_steps_arr, kl_div_history_arr, label='KL Divergence', color='purple', marker='s', markersize=4, alpha=0.7)
+    
+    # add epoch ticks on top axis for subplot 2
+    if len(epoch_end_steps) > 0:
+        top_ax2 = ax2.secondary_xaxis('top')
+        top_ax2.set_xticks(top_ticks)
+        top_ax2.set_xticklabels(top_labels)
+        top_ax2.set_xlabel('Epoch')
+    
+    ax2.set_xlabel('Step Number')
+    ax2.set_ylabel('Value')
+    ax2.set_title(f'Win Rate & KL Divergence - {model_name.split("/")[-1]} DPO')
+    ax2.legend(loc='upper right')
+    ax2.grid(False)
+    
     fig.tight_layout()
     fig.savefig(f"dpo_loss_curve.png")
     
@@ -271,6 +335,7 @@ for epoch in range(EPOCHS):
     optimizer.zero_grad()
     accumulation_step = 0
     for batch in pbar:
+        model.train()
         win_model_inputs = prepare_inputs(batch["chosen"], tokenizer, model.device)
         win_labels = mask_non_assistant_response(win_model_inputs, tokenizer)
         lose_model_inputs = prepare_inputs(batch["rejected"], tokenizer, model.device)
@@ -281,11 +346,8 @@ for epoch in range(EPOCHS):
         # forward passes
         lora_win_outputs = model(**win_model_inputs, labels=None, use_cache=False) # disable KV cache
         lora_lose_outputs = model(**lose_model_inputs, labels=None, use_cache=False) # disable KV cache
-        lora_win_softmax = torch.nn.functional.softmax(lora_win_outputs.logits, dim=-1)
-        lora_lose_softmax = torch.nn.functional.softmax(lora_lose_outputs.logits, dim=-1)
-        # compute sentence-level probability for responses by summing log probs (masked by labels)
-        lora_win_log_prob = torch.log(lora_win_softmax + 1e-8)
-        lora_lose_log_prob = torch.log(lora_lose_softmax + 1e-8)
+        lora_win_log_prob = torch.nn.functional.log_softmax(lora_win_outputs.logits, dim=-1)
+        lora_lose_log_prob = torch.nn.functional.log_softmax(lora_lose_outputs.logits, dim=-1)
         # consider log probs of only token positions in training data
         lora_win_log_prob_gathered = torch.gather(lora_win_log_prob, dim=2, index=win_input_ids_shifted.unsqueeze(-1)).squeeze(-1)
         lora_lose_log_prob_gathered = torch.gather(lora_lose_log_prob, dim=2, index=lose_input_ids_shifted.unsqueeze(-1)).squeeze(-1)
@@ -297,17 +359,17 @@ for epoch in range(EPOCHS):
         # get reference model outputs without gradient and adapter
         with torch.no_grad():
             with model.disable_adapter():
+                model.eval() # make sure to set reference model to eval mode for stable evaluation!
                 ref_win_outputs = model(**win_model_inputs, labels=None, use_cache=False)
                 ref_lose_outputs = model(**lose_model_inputs, labels=None, use_cache=False)
-                ref_win_softmax = torch.nn.functional.softmax(ref_win_outputs.logits, dim=-1)
-                ref_lose_softmax = torch.nn.functional.softmax(ref_lose_outputs.logits, dim=-1)
-                ref_win_log_prob = torch.log(ref_win_softmax + 1e-8)
-                ref_lose_log_prob = torch.log(ref_lose_softmax + 1e-8)
+                ref_win_log_prob = torch.nn.functional.log_softmax(ref_win_outputs.logits, dim=-1)
+                ref_lose_log_prob = torch.nn.functional.log_softmax(ref_lose_outputs.logits, dim=-1)
                 ref_win_log_prob_gathered = torch.gather(ref_win_log_prob, dim=2, index=win_input_ids_shifted.unsqueeze(-1)).squeeze(-1)
                 ref_lose_log_prob_gathered = torch.gather(ref_lose_log_prob, dim=2, index=lose_input_ids_shifted.unsqueeze(-1)).squeeze(-1)
                 # win_mask and lose_mask are the same for LoRA and reference since they are based on the input labels
                 ref_win_sentence_log_prob = (ref_win_log_prob_gathered * win_mask)[:, :-1].sum(dim=1)
                 ref_lose_sentence_log_prob = (ref_lose_log_prob_gathered * lose_mask)[:, :-1].sum(dim=1)
+        model.train() # switch back to train mode for the policy model after getting reference outputs
         # compute DPO loss
         loss = -torch.log(
             torch.sigmoid(
@@ -331,6 +393,7 @@ for epoch in range(EPOCHS):
         
         # Step-based validation
         if global_step % EVAL_INTERVAL == 0:
+            model.eval()
             pbar_eval = tqdm(test_dataloader, desc=f"Eval at Step {global_step}", leave=False)
             eval_loss = 0
             eval_batch_count = 0
@@ -349,14 +412,10 @@ for epoch in range(EPOCHS):
                     lora_lose_outputs_eval = model(**lose_model_inputs_eval, labels=None, use_cache=False) # disable KV cache
                     ref_win_outputs_eval = model(**win_model_inputs_eval, labels=None, use_cache=False)
                     ref_lose_outputs_eval = model(**lose_model_inputs_eval, labels=None, use_cache=False)
-                    lora_win_softmax_eval = torch.nn.functional.softmax(lora_win_outputs_eval.logits, dim=-1)
-                    lora_lose_softmax_eval = torch.nn.functional.softmax(lora_lose_outputs_eval.logits, dim=-1)
-                    ref_win_softmax_eval = torch.nn.functional.softmax(ref_win_outputs_eval.logits, dim=-1)
-                    ref_lose_softmax_eval = torch.nn.functional.softmax(ref_lose_outputs_eval.logits, dim=-1)
-                    lora_win_log_prob_eval = torch.log(lora_win_softmax_eval + 1e-8)
-                    lora_lose_log_prob_eval = torch.log(lora_lose_softmax_eval + 1e-8)
-                    ref_win_log_prob_eval = torch.log(ref_win_softmax_eval + 1e-8)
-                    ref_lose_log_prob_eval = torch.log(ref_lose_softmax_eval + 1e-8)
+                    lora_win_log_prob_eval = torch.nn.functional.log_softmax(lora_win_outputs_eval.logits, dim=-1)
+                    lora_lose_log_prob_eval = torch.nn.functional.log_softmax(lora_lose_outputs_eval.logits, dim=-1)
+                    ref_win_log_prob_eval = torch.nn.functional.log_softmax(ref_win_outputs_eval.logits, dim=-1)
+                    ref_lose_log_prob_eval = torch.nn.functional.log_softmax(ref_lose_outputs_eval.logits, dim=-1)
                     lora_win_log_prob_gathered_eval = torch.gather(lora_win_log_prob_eval, dim=2, index=win_input_ids_shifted_eval.unsqueeze(-1)).squeeze(-1)
                     lora_lose_log_prob_gathered_eval = torch.gather(lora_lose_log_prob_eval, dim=2, index=lose_input_ids_shifted_eval.unsqueeze(-1)).squeeze(-1)
                     ref_win_log_prob_gathered_eval = torch.gather(ref_win_log_prob_eval, dim=2, index=win_input_ids_shifted_eval.unsqueeze(-1)).squeeze(-1)
@@ -388,11 +447,13 @@ for epoch in range(EPOCHS):
                     )
             kl_div /= eval_batch_count
             kl_div_history.append(kl_div.detach().item() / 2.0)
-            kl_div_steps.append(global_step)
+            # compute win rate: fraction of samples where chosen has higher log prob than rejected
+            eval_win_rate = torch.mean((lora_win_sentence_log_prob_eval > lora_lose_sentence_log_prob_eval).float()).item()
+            win_rate_history.append(eval_win_rate)
             eval_loss /= eval_batch_count
             eval_loss_history.append(eval_loss)
             eval_loss_steps.append(global_step)
-            tqdm.write(f"Step {global_step}: Train Loss={train_loss_history[-1]:.4f}, Eval Loss={eval_loss:.4f}")
+            tqdm.write(f"Step {global_step}: Train Loss={train_loss_history[-1]:.4f}, Eval Loss={eval_loss:.4f}, Win Rate={eval_win_rate:.4f}")
             
             # update best eval loss
             if eval_loss < best_eval_loss:
@@ -403,8 +464,14 @@ for epoch in range(EPOCHS):
             
             plot_loss_curves()
         
+        # # in each validation, generate for several prompts in test set and evaluate the reward win rate against reference model
+        # if global_step % EVAL_INTERVAL == 0:
+        #     model.eval()
+        #     pbar_eval = tqdm(test_dataloader, desc=f"Eval at Step {global_step}", leave=False)
+        
         if global_step % EXAMPLE_GEN_INTERVAL == 0:
             # example generation
+            model.eval()
             _prompt = "Describe the property of sin and cos functions. List the properties one by one."
             _message = [{"role": "user", "content": _prompt}]
             inputs = tokenizer.apply_chat_template(_message, add_generation_prompt=True, return_tensors="pt").to(model.device)
@@ -420,6 +487,7 @@ for epoch in range(EPOCHS):
             print(f"Example Generation at Epoch {epoch + 1} Step {accumulation_step + 1}:\n{generated_text}\n")
 
     if accumulation_step % GRADIENT_ACCUMULATION_STEPS != 0:
+        model.train()
         optimizer.step()
         scheduler.step()
         optimizer.zero_grad(set_to_none=True)
