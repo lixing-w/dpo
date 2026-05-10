@@ -1,0 +1,530 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 2493845
+##  Job Name : DPO
+##  Nodelist : gpu3002
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/dpo
+##   Job Started : Sun May 10 02:34:56 PM EDT 2026
+###############################################################################
+
+==========================================
+Job started at: Sun May 10 02:34:56 PM EDT 2026
+Job ID: 2493845
+Node: gpu3002
+==========================================
+
+GPU Information (from host):
+Sun May 10 14:34:56 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L40S                    On  |   00000000:81:00.0 Off |                    0 |
+| N/A   34C    P8             33W /  350W |      74MiB /  46068MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          158354      G   /usr/libexec/Xorg                        64MiB |
++-----------------------------------------------------------------------------------------+
+
+PyTorch version: 2.6.0+cu124
+Model Name: Qwen/Qwen2.5-0.5B_sft_step_13000
+Reward Model Name: Qwen/Qwen2.5-0.5B_sft_step_13000_reward_step_7000
+Raw Model Generation:
+['<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nDescribe the property of sin and cos functions. List the properties one by one.<|im_end|>\n<|im_start|>assistant\nThe sine and cosine functions are both trigonometric functions that describe the ratio of the lengths of the sides of a right-angled triangle. They have the following properties:\n\n1. Sine and cosine are periodic functions with a period of 2π.\n2. Sine and cosine are both odd functions, meaning that they satisfy the condition that sin(-x) = -sin(x) and cos(-x) = cos(x).\n3. Sine and cosine are both even functions, meaning that they satisfy the condition that sin(x) = sin(-x) and cos(x) = cos(-x).\n4. Sine and cosine are both continuous functions on their domains, meaning that they are defined for all real numbers and their values are continuous.\n5. Sine and cosine are both bounded functions, meaning that they have a minimum and maximum value of 0 and 1, respectively.\n6. Sine and cosine are both bounded functions on their domains, meaning that they have a minimum and maximum value of 0 and 1, respectively.\n7. Sine and cosine are both increasing functions, meaning that their values increase as their arguments increase.\n8. Sine and cosine are both increasing functions on their domains, meaning that their values increase as their arguments increase.\n9. Sine and cosine are both decreasing functions, meaning that their values decrease as their arguments increase.\n10. Sine and cosine are both increasing functions on their domains, meaning that their values increase as their arguments increase.\n11. Sine and cosine are both decreasing functions, meaning that their values decrease as their arguments increase.\n12. Sine and cosine are both periodic functions with a period of 2π.\n13. Sine and cosine are both even functions, meaning that they satisfy the condition that sin(x) = sin(-x) and cos(x) = cos(-x).\n14. Sine and cosine are both odd functions, meaning that they satisfy the condition that sin(x) = -sin(-x) and cos(x) = -cos(-x).\n15. Sine and cosine are both bounded functions, meaning that they have a minimum and maximum value of 0 and 1, respectively.\n16. Sine and cosine are both bounded functions on their domains, meaning that their values are continuous.\n17. Sine and cosine are both increasing functions, meaning that their values increase as their arguments increase.\n18. Sine and cosine are both increasing functions on their domains, meaning that their values increase']
+
+tensor([4.5312], device='cuda:0', dtype=torch.bfloat16)
+Example Data:
+Train Data:
+{'prompt': 'how can i develop a habit of drawing daily', 'prompt_id': '086b3e24f29b8956a01059f79c56db35d118a06fb6b844b095737d042795cd43', 'chosen': [{'content': 'how can i develop a habit of drawing daily', 'role': 'user'}, {'content': "Developing a daily habit of drawing can be challenging but with consistent practice and a few tips, it can become an enjoyable and rewarding part of your daily routine. Here are some strategies to help you develop the habit of drawing daily:\n\n1. Set a specific time: Allocate a specific time of the day to draw. It could be in the morning, afternoon, or evening. Make drawing a part of your daily routine.\n2. Set a specific duration: Determine the amount of time you want to spend on drawing each day. It can be as little as 10 minutes or as long as an hour. Be consistent with the duration to help build the habit.\n3. Start small and simple: Don't try to create a masterpiece every day, start with simple and easy-to-do sketches. Focus on improving your skills gradually.\n4. Use a variety of tools and mediums: Experiment with different tools like pencils, pens, markers, and different mediums like paper, canvas, or digital apps to keep your drawing practice interesting and engaging.\n5. Take breaks and rest: Taking breaks and resting after some time of drawing can help you avoid burnout and stay motivated.\n6. Challenge yourself: Set challenges like drawing objects from memory or a specific subject to improve your skills and keep your drawing practice interesting.\n7. Track your progress: Keep a record of your daily drawing practice and track your progress. This can be a source of motivation and help you see how far you've come.\n\nRemember, developing a habit takes time and patience. Stay consistent with your drawing practice, be flexible and open to trying new things, and with time, you'll develop a habit of daily drawing that brings you joy and satisfaction.", 'role': 'assistant'}], 'rejected': [{'content': 'how can i develop a habit of drawing daily', 'role': 'user'}, {'content': "As an AI language model, I cannot personally develop habits for you. But, here are some tips for developing a habit of drawing daily:\n\n1. Start small: Start with simple drawings or doodles and gradually increase the complexity of your drawings.\n\n2. Set a schedule: Set a specific time every day to draw, and try to stick to it as much as possible.\n\n3. Make it fun: Don't pressure yourself to create masterpieces every time you draw. Make it a relaxing and enjoyable experience.\n\n4. Use resources: There are many drawing tutorials available online. Use resources like YouTube or online drawing courses to help you improve your skills.\n\n5. Surround yourself with inspiration: Expose yourself to a variety of art forms, such as paintings, illustrations, and photographs, to inspire and motivate you.\n\nRemember, everyone has their own creative style and pace. Just keep practicing and enjoying the process of drawing.", 'role': 'assistant'}], 'messages': [{'content': 'how can i develop a habit of drawing daily', 'role': 'user'}, {'content': "Developing a daily habit of drawing can be challenging but with consistent practice and a few tips, it can become an enjoyable and rewarding part of your daily routine. Here are some strategies to help you develop the habit of drawing daily:\n\n1. Set a specific time: Allocate a specific time of the day to draw. It could be in the morning, afternoon, or evening. Make drawing a part of your daily routine.\n2. Set a specific duration: Determine the amount of time you want to spend on drawing each day. It can be as little as 10 minutes or as long as an hour. Be consistent with the duration to help build the habit.\n3. Start small and simple: Don't try to create a masterpiece every day, start with simple and easy-to-do sketches. Focus on improving your skills gradually.\n4. Use a variety of tools and mediums: Experiment with different tools like pencils, pens, markers, and different mediums like paper, canvas, or digital apps to keep your drawing practice interesting and engaging.\n5. Take breaks and rest: Taking breaks and resting after some time of drawing can help you avoid burnout and stay motivated.\n6. Challenge yourself: Set challenges like drawing objects from memory or a specific subject to improve your skills and keep your drawing practice interesting.\n7. Track your progress: Keep a record of your daily drawing practice and track your progress. This can be a source of motivation and help you see how far you've come.\n\nRemember, developing a habit takes time and patience. Stay consistent with your drawing practice, be flexible and open to trying new things, and with time, you'll develop a habit of daily drawing that brings you joy and satisfaction.", 'role': 'assistant'}], 'score_chosen': 8.5, 'score_rejected': 8.5}
+Test Data:
+{'prompt': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'prompt_id': '333685aaf217d34921dac65dbea023fe1180b5c1973dbb6554bc022d74b54e0c', 'chosen': [{'content': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'role': 'user'}, {'content': 'Could you provide some context or information about what you are looking for or any particular questions you have, so I can assist better?', 'role': 'assistant'}], 'rejected': [{'content': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'role': 'user'}, {'content': 'As an AI assistant, it\'s essential to generate the first sentence on the same topic that may seem unrelated or inconsistent with the second sentence. Based on the example, I will provide two different responses to maintain the World Guard service principles:\n\nFor the first sentence, it is essential to maintain the World Guard principles such as identifying the different teams and the skill sets of each team player. The first sentence would be:\n\n"Intelligence gathering and operation teams consist of specialized personnel, including ghost operatives proficient in combat, communications, and espionage."\n\nFor the second sentence, the inconsistency lies in the context of fiscal year and police training. While one sentence relates to WW2 spies, the other sentence relates to money spent on police training.\nTo provide an answer that is inconsistent with the second sentence, we can make a reference to another government agency that deals with money allocation. Thus, the WW2 spies sentence would be:\n\n"After the famous World War II event, during which spies called themselves \'The World Guard,\' the USA created a government agency called \'The Department of Finance.\' Their sole purpose was to monitor, regulate and control the fiscal year expenses made on various training and assistance programs, which help expand national capacities."\n\nPlease let me know if you need any further assistance, and I would be happy to help!', 'role': 'assistant'}], 'messages': [{'content': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'role': 'user'}, {'content': 'Could you provide some context or information about what you are looking for or any particular questions you have, so I can assist better?', 'role': 'assistant'}], 'score_chosen': 4.0, 'score_rejected': 4.0}
+Hyperparameters:
+         Epochs: 2
+         Learning Rate: 5e-06
+         Batch Size: 2
+         Gradient Accumulation Steps: 8
+         Max Sequence Length: 1024
+         Beta (DPO): 0.2
+         LoRA Rank: 16
+         Validation Frequency (steps): 3000
+ 
+
+{'input_ids': tensor([[151644,   8948,    198,  ..., 151643, 151643, 151643],
+        [151644,   8948,    198,  ..., 151644,  77091,    198]],
+       device='cuda:0'), 'attention_mask': tensor([[1, 1, 1,  ..., 0, 0, 0],
+        [1, 1, 1,  ..., 1, 1, 1]], device='cuda:0')}
+trainable params: 8,404,992 || all params: 502,437,760 || trainable%: 1.6728
+Number of trainable parameters: 8404992
+Number of trainable layers: 288
+Trainable layers:
+('base_model.model.model.layers.0.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.0.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.0.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.0.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.0.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.0.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.0.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.0.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.0.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.0.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.0.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.0.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.1.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.1.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.1.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.1.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.1.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.1.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.1.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.1.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.1.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.1.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.1.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.1.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.2.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.2.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.2.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.2.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.2.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.2.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.2.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.2.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.2.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.2.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.2.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.2.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.3.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.3.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.3.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.3.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.3.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.3.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.3.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.3.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.3.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.3.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.3.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.3.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.4.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.4.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.4.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.4.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.4.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.4.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.4.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.4.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.4.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.4.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.4.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.4.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.5.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.5.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.5.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.5.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.5.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.5.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.5.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.5.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.5.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.5.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.5.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.5.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.6.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.6.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.6.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.6.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.6.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.6.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.6.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.6.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.6.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.6.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.6.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.6.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.7.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.7.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.7.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.7.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.7.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.7.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.7.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.7.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.7.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.7.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.7.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.7.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.8.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.8.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.8.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.8.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.8.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.8.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.8.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.8.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.8.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.8.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.8.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.8.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.9.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.9.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.9.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.9.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.9.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.9.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.9.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.9.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.9.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.9.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.9.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.9.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.10.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.10.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.10.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.10.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.10.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.10.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.10.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.10.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.10.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.10.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.10.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.10.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.11.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.11.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.11.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.11.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.11.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.11.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.11.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.11.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.11.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.11.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.11.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.11.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.12.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.12.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.12.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.12.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.12.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.12.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.12.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.12.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.12.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.12.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.12.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.12.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.13.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.13.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.13.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.13.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.13.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.13.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.13.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.13.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.13.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.13.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.13.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.13.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.14.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.14.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.14.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.14.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.14.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.14.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.14.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.14.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.14.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.14.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.14.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.14.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.15.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.15.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.15.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.15.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.15.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.15.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.15.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.15.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.15.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.15.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.15.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.15.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.16.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.16.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.16.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.16.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.16.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.16.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.16.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.16.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.16.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.16.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.16.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.16.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.17.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.17.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.17.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.17.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.17.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.17.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.17.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.17.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.17.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.17.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.17.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.17.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.18.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.18.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.18.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.18.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.18.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.18.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.18.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.18.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.18.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.18.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.18.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.18.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.19.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.19.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.19.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.19.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.19.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.19.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.19.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.19.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.19.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.19.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.19.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.19.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.20.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.20.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.20.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.20.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.20.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.20.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.20.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.20.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.20.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.20.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.20.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.20.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.21.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.21.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.21.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.21.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.21.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.21.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.21.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.21.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.21.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.21.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.21.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.21.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.22.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.22.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.22.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.22.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.22.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.22.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.22.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.22.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.22.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.22.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.22.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.22.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.23.self_attn.q_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.23.self_attn.q_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.23.self_attn.v_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.23.self_attn.v_proj.lora_B.default.weight', torch.Size([128, 16]))
+('base_model.model.model.layers.23.self_attn.o_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.23.self_attn.o_proj.lora_B.default.weight', torch.Size([896, 16]))
+('base_model.model.model.layers.23.mlp.gate_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.23.mlp.gate_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.23.mlp.up_proj.lora_A.default.weight', torch.Size([16, 896]))
+('base_model.model.model.layers.23.mlp.up_proj.lora_B.default.weight', torch.Size([4864, 16]))
+('base_model.model.model.layers.23.mlp.down_proj.lora_A.default.weight', torch.Size([16, 4864]))
+('base_model.model.model.layers.23.mlp.down_proj.lora_B.default.weight', torch.Size([896, 16]))
+policy logits shape: torch.Size([1, 16, 151936])
+ref logits shape: torch.Size([1, 16, 151936])
+tensor([[[ 7.0312,  6.6250,  4.7188,  ..., -2.3281, -2.3281, -2.3281],
+         [ 6.0000,  6.4375,  4.5938,  ..., -3.6875, -3.6875, -3.6875],
+         [ 9.8125, 10.1250,  9.1250,  ..., -1.9062, -1.9141, -1.9141],
+         ...,
+         [11.0625, 10.0625,  9.4375,  ..., -3.2188, -3.2188, -3.2188],
+         [13.6875,  9.1875,  9.8750,  ..., -2.2031, -2.2031, -2.2031],
+         [ 7.1250, -3.6562,  4.8750,  ..., -5.3438, -5.3438, -5.3438]]],
+       device='cuda:0', dtype=torch.bfloat16, grad_fn=<UnsafeViewBackward0>)
+New best model saved with eval loss 0.6921
+Example Generation at Step 0:
+Prompt: In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:
+Reward: 9.4375, Reference Reward: 9.4375
+Generated Text: <|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:<|im_end|>
+<|im_start|>assistant
+The ice was found in Charlotte ( Rochester ) by Silas Hudson.<|im_end|>
+<|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|>
+Reference Generated Text: <|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:<|im_end|>
+<|im_start|>assistant
+The ice was found in Charlotte ( Rochester ) by Silas Hudson.<|im_end|>
+<|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|>
+Step 0: Train Loss=0.6914, Eval Loss=0.6921, Win Rate=0.0000
+Example Generation at Step 3000:
+Prompt: In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:
+Reward: 9.3750, Reference Reward: 9.4375
+Generated Text: <|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:<|im_end|>
+<|im_start|>assistant
+The ice in Charlotte (Rochester) was found by Silas Hudson, who was a local resident.<|im_end|>
+<|endoftext|>
+Reference Generated Text: <|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:<|im_end|>
+<|im_start|>assistant
+The ice was found in Charlotte ( Rochester ) by Silas Hudson.<|im_end|>
+<|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|>
+Step 3000: Train Loss=0.6914, Eval Loss=0.7885, Win Rate=0.3939
+Example Generation at Step 6000:
+Prompt: In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:
+Reward: 9.0000, Reference Reward: 9.4375
+Generated Text: <|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:<|im_end|>
+<|im_start|>assistant
+The body of the deceased was discovered in the ice in Charlotte ( Rochester ) shortly after the spring thaw, providing evidence of a tragic event in the region.<|im_end|>
+<|endoftext|>
+Reference Generated Text: <|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.
+
+Q: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .
+
+A: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .
+****
+Q: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .
+
+A: No government agency is in charge of calculating the cost .
+****
+Q: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .
+
+A:<|im_end|>
+<|im_start|>assistant
+The ice was found in Charlotte ( Rochester ) by Silas Hudson.<|im_end|>
+<|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|><|endoftext|>
+Step 6000: Train Loss=0.6797, Eval Loss=3.8762, Win Rate=0.4242
