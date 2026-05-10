@@ -135,12 +135,12 @@ else:
 
 # set up hyperparameters
 EPOCHS = 2
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 2e-5
 BATCH_SIZE = 8
 GRADIENT_ACCUMULATION_STEPS = 8
 MAX_LENGTH = 1024
 REWARD_CENTERING = 0.001 # penalize coefficient. Additional loss: reward_centering * (reward)^2
-EVAL_INTERVAL = 1500  # validate every 1000 steps
+EVAL_INTERVAL = 1000  # validate every 1000 steps
 
 print(f"Hyperparameters:\n \
         Epochs: {EPOCHS}\n \
@@ -154,18 +154,6 @@ print(f"Hyperparameters:\n \
 # %%
 train_dataloader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
 test_dataloader = DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle=False)
-
-# %%
-
-
-# %%
-# check out the injected lora layers!
-trainable = [(n, p.shape) for n, p in reward_model.named_parameters() if p.requires_grad]
-print(f"Number of trainable parameters: {sum(p.numel() for n, p in reward_model.named_parameters() if p.requires_grad)}")
-print(f"Number of trainable layers: {len(trainable)}")
-print("Trainable layers:")
-for item in trainable:
-    print(item)
 
 # %%
 # model.save_pretrained(f"checkpoints/{model_name}_sft_epoch_0")
@@ -226,11 +214,10 @@ optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader), eta_min=1e-6)
 
 train_loss_history = [] # for each step (batch)
-centering_penalty_history = [] # for each step (batch)
 eval_loss_history = [] # for each validation step
 eval_loss_steps = [] # step numbers when validation was performed
-eval_centering_penalty_history = [] # for each validation step, record the centering penalty to see how it evolves during training
 epoch_end_steps = [] # to keep track of step number at the end of each epoch for plotting
+eval_win_rate_history = [] # to record the rate at which the reward model prefers the chosen response over the rejected response in the eval set
 best_eval_loss = float('inf')
 global_step = 0
 
@@ -245,13 +232,14 @@ def plot_loss_curves():
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(step_num_history_arr, train_loss_history_arr, label='Training Loss', alpha=0.7)
     ax.plot(eval_loss_steps_arr, eval_loss_history_arr, label='Validation Loss', marker='o', markersize=4, alpha=0.7)
-    
+    ax.legend(loc='upper left')
     # plot centering penalties on a separate y axis
     ax2 = ax.twinx()
-    ax2.plot(eval_loss_steps_arr, eval_centering_penalty_history, label='Eval Centering Penalty', marker='o', markersize=4, alpha=0.7, color='orange')
-    ax2.plot(step_num_history_arr, centering_penalty_history, label='Train Centering Penalty', markersize=4, alpha=0.2, color='green')
+    ax2.plot(eval_loss_steps_arr, eval_win_rate_history, label='Eval Win Rate', color='orange', marker='x', markersize=4, alpha=0.7)
+    # set y range to 0-1 for win rate
+    ax2.set_ylim(0, 1)
     # set y label for the centering penalty axis
-    ax2.set_ylabel('Centering Penalty')
+    ax2.set_ylabel('Eval Win Rate')
     ax2.legend(loc='upper right')
     # add vertical lines at epoch boundaries
     for step_idx in epoch_end_steps:
@@ -308,8 +296,6 @@ for epoch in range(EPOCHS):
         train_loss_history.append(loss.detach().item()) # record the loss before reward centering penalty for better visualization of training dynamics
         # add reward centering penalty
         centering_penalty = torch.mean(win_rewards**2 + lose_rewards**2)
-        centering_penalty_history.append(centering_penalty.detach().item()) # record the centering penalty for visualization
-        
         loss = loss + REWARD_CENTERING * centering_penalty
         (loss / GRADIENT_ACCUMULATION_STEPS).backward()
         accumulation_step += 1
@@ -324,7 +310,7 @@ for epoch in range(EPOCHS):
         if global_step % EVAL_INTERVAL == 0:
             pbar_eval = tqdm(test_dataloader, desc=f"Eval at Step {global_step}", leave=False)
             eval_loss = 0
-            eval_centering_penalty = 0
+            eval_win_rate = 0
             eval_batch_count = 0
             kl_div = 0
             for batch_eval in pbar_eval:
@@ -344,15 +330,18 @@ for epoch in range(EPOCHS):
                     eval_loss += loss.detach().item()
                     eval_batch_count += 1
                     
-                    centering_penalty_eval = torch.mean(win_rewards_eval**2 + lose_rewards_eval**2)
-                    eval_centering_penalty += centering_penalty_eval.detach().item()
+                    # compute win rate
+                    win_rate = torch.mean((win_rewards_eval > lose_rewards_eval).float())
+                    eval_win_rate += win_rate.detach().item()
+
+                    # centering_penalty_eval = torch.mean(win_rewards_eval**2 + lose_rewards_eval**2)
                     
             eval_loss /= eval_batch_count
-            eval_centering_penalty /= eval_batch_count
+            eval_win_rate /= eval_batch_count
+            eval_win_rate_history.append(eval_win_rate)
             eval_loss_history.append(eval_loss)
             eval_loss_steps.append(global_step)
-            eval_centering_penalty_history.append(eval_centering_penalty)
-            tqdm.write(f"Step {global_step}: Train Loss={train_loss_history[-1]:.4f}, Eval Loss={eval_loss:.4f}, Train Centering Penalty={centering_penalty_history[-1]:.6f}, Eval Centering Penalty={eval_centering_penalty:.6f}")
+            tqdm.write(f"Step {global_step}: Train Loss={train_loss_history[-1]:.4f}, Eval Loss={eval_loss:.4f}, Eval Win Rate={eval_win_rate:.6f}")
             
             # update best eval loss
             if eval_loss < best_eval_loss:

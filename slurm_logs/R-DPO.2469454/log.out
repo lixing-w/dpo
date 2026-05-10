@@ -1,0 +1,391 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 2469454
+##  Job Name : DPO
+##  Nodelist : gpu3001
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/dpo
+##   Job Started : Sat May  9 01:29:32 PM EDT 2026
+###############################################################################
+
+==========================================
+Job started at: Sat May  9 01:29:32 PM EDT 2026
+Job ID: 2469454
+Node: gpu3001
+==========================================
+
+GPU Information (from host):
+Sat May  9 13:29:32 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L40S                    On  |   00000000:A1:00.0 Off |                    0 |
+| N/A   51C    P0             66W /  350W |      76MiB /  46068MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          157596      G   /usr/libexec/Xorg                        64MiB |
++-----------------------------------------------------------------------------------------+
+
+PyTorch version: 2.6.0+cu124
+Model Name: Qwen/Qwen2.5-0.5B_sft_step_13000
+Qwen2ForCausalLM(
+  (model): Qwen2Model(
+    (embed_tokens): Embedding(151936, 896)
+    (layers): ModuleList(
+      (0-23): 24 x Qwen2DecoderLayer(
+        (self_attn): Qwen2Attention(
+          (q_proj): Linear(in_features=896, out_features=896, bias=True)
+          (k_proj): Linear(in_features=896, out_features=128, bias=True)
+          (v_proj): Linear(in_features=896, out_features=128, bias=True)
+          (o_proj): Linear(in_features=896, out_features=896, bias=False)
+        )
+        (mlp): Qwen2MLP(
+          (gate_proj): Linear(in_features=896, out_features=4864, bias=False)
+          (up_proj): Linear(in_features=896, out_features=4864, bias=False)
+          (down_proj): Linear(in_features=4864, out_features=896, bias=False)
+          (act_fn): SiLUActivation()
+        )
+        (input_layernorm): Qwen2RMSNorm((896,), eps=1e-06)
+        (post_attention_layernorm): Qwen2RMSNorm((896,), eps=1e-06)
+      )
+    )
+    (norm): Qwen2RMSNorm((896,), eps=1e-06)
+    (rotary_emb): Qwen2RotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=896, out_features=151936, bias=False)
+)
+{'input_ids': tensor([[ 40451,    752,    264,  21646,     13, 151643, 151643],
+        [  4340,    653,    358,   1936,    264,  12764,     30]],
+       device='cuda:0'), 'attention_mask': tensor([[1, 1, 1, 1, 1, 0, 0],
+        [1, 1, 1, 1, 1, 1, 1]], device='cuda:0')}
+tensor([-1.0000, -7.3438], device='cuda:0', dtype=torch.bfloat16,
+       grad_fn=<SqueezeBackward1>)
+torch.Size([2])
+Example Data:
+Train Data:
+{'prompt': 'how can i develop a habit of drawing daily', 'prompt_id': '086b3e24f29b8956a01059f79c56db35d118a06fb6b844b095737d042795cd43', 'chosen': [{'content': 'how can i develop a habit of drawing daily', 'role': 'user'}, {'content': "Developing a daily habit of drawing can be challenging but with consistent practice and a few tips, it can become an enjoyable and rewarding part of your daily routine. Here are some strategies to help you develop the habit of drawing daily:\n\n1. Set a specific time: Allocate a specific time of the day to draw. It could be in the morning, afternoon, or evening. Make drawing a part of your daily routine.\n2. Set a specific duration: Determine the amount of time you want to spend on drawing each day. It can be as little as 10 minutes or as long as an hour. Be consistent with the duration to help build the habit.\n3. Start small and simple: Don't try to create a masterpiece every day, start with simple and easy-to-do sketches. Focus on improving your skills gradually.\n4. Use a variety of tools and mediums: Experiment with different tools like pencils, pens, markers, and different mediums like paper, canvas, or digital apps to keep your drawing practice interesting and engaging.\n5. Take breaks and rest: Taking breaks and resting after some time of drawing can help you avoid burnout and stay motivated.\n6. Challenge yourself: Set challenges like drawing objects from memory or a specific subject to improve your skills and keep your drawing practice interesting.\n7. Track your progress: Keep a record of your daily drawing practice and track your progress. This can be a source of motivation and help you see how far you've come.\n\nRemember, developing a habit takes time and patience. Stay consistent with your drawing practice, be flexible and open to trying new things, and with time, you'll develop a habit of daily drawing that brings you joy and satisfaction.", 'role': 'assistant'}], 'rejected': [{'content': 'how can i develop a habit of drawing daily', 'role': 'user'}, {'content': "As an AI language model, I cannot personally develop habits for you. But, here are some tips for developing a habit of drawing daily:\n\n1. Start small: Start with simple drawings or doodles and gradually increase the complexity of your drawings.\n\n2. Set a schedule: Set a specific time every day to draw, and try to stick to it as much as possible.\n\n3. Make it fun: Don't pressure yourself to create masterpieces every time you draw. Make it a relaxing and enjoyable experience.\n\n4. Use resources: There are many drawing tutorials available online. Use resources like YouTube or online drawing courses to help you improve your skills.\n\n5. Surround yourself with inspiration: Expose yourself to a variety of art forms, such as paintings, illustrations, and photographs, to inspire and motivate you.\n\nRemember, everyone has their own creative style and pace. Just keep practicing and enjoying the process of drawing.", 'role': 'assistant'}], 'messages': [{'content': 'how can i develop a habit of drawing daily', 'role': 'user'}, {'content': "Developing a daily habit of drawing can be challenging but with consistent practice and a few tips, it can become an enjoyable and rewarding part of your daily routine. Here are some strategies to help you develop the habit of drawing daily:\n\n1. Set a specific time: Allocate a specific time of the day to draw. It could be in the morning, afternoon, or evening. Make drawing a part of your daily routine.\n2. Set a specific duration: Determine the amount of time you want to spend on drawing each day. It can be as little as 10 minutes or as long as an hour. Be consistent with the duration to help build the habit.\n3. Start small and simple: Don't try to create a masterpiece every day, start with simple and easy-to-do sketches. Focus on improving your skills gradually.\n4. Use a variety of tools and mediums: Experiment with different tools like pencils, pens, markers, and different mediums like paper, canvas, or digital apps to keep your drawing practice interesting and engaging.\n5. Take breaks and rest: Taking breaks and resting after some time of drawing can help you avoid burnout and stay motivated.\n6. Challenge yourself: Set challenges like drawing objects from memory or a specific subject to improve your skills and keep your drawing practice interesting.\n7. Track your progress: Keep a record of your daily drawing practice and track your progress. This can be a source of motivation and help you see how far you've come.\n\nRemember, developing a habit takes time and patience. Stay consistent with your drawing practice, be flexible and open to trying new things, and with time, you'll develop a habit of daily drawing that brings you joy and satisfaction.", 'role': 'assistant'}], 'score_chosen': 8.5, 'score_rejected': 8.5}
+Test Data:
+{'prompt': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'prompt_id': '333685aaf217d34921dac65dbea023fe1180b5c1973dbb6554bc022d74b54e0c', 'chosen': [{'content': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'role': 'user'}, {'content': 'Could you provide some context or information about what you are looking for or any particular questions you have, so I can assist better?', 'role': 'assistant'}], 'rejected': [{'content': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'role': 'user'}, {'content': 'As an AI assistant, it\'s essential to generate the first sentence on the same topic that may seem unrelated or inconsistent with the second sentence. Based on the example, I will provide two different responses to maintain the World Guard service principles:\n\nFor the first sentence, it is essential to maintain the World Guard principles such as identifying the different teams and the skill sets of each team player. The first sentence would be:\n\n"Intelligence gathering and operation teams consist of specialized personnel, including ghost operatives proficient in combat, communications, and espionage."\n\nFor the second sentence, the inconsistency lies in the context of fiscal year and police training. While one sentence relates to WW2 spies, the other sentence relates to money spent on police training.\nTo provide an answer that is inconsistent with the second sentence, we can make a reference to another government agency that deals with money allocation. Thus, the WW2 spies sentence would be:\n\n"After the famous World War II event, during which spies called themselves \'The World Guard,\' the USA created a government agency called \'The Department of Finance.\' Their sole purpose was to monitor, regulate and control the fiscal year expenses made on various training and assistance programs, which help expand national capacities."\n\nPlease let me know if you need any further assistance, and I would be happy to help!', 'role': 'assistant'}], 'messages': [{'content': 'In this task, you are given a second sentence. Your task is to generate the first sentence on the same topic but incoherent and inconsistent with the second sentence.\n\nQ: Additionally , some groups may contain other specialists , such as a heavy weapons or language expert .\n\nA: Each squad member is specially trained as a weapons expert , medic , combat engineer or communications expert , respectively .\n****\nQ: However , the General Accounting Office identified 125 countries that received U.S. training and assistance for their police forces during fiscal year 1990 at a cost of at least $117 million .\n\nA: No government agency is in charge of calculating the cost .\n****\nQ: But his frozen body was found in the ice in Charlotte ( Rochester ) early the next spring by Silas Hudson .\n\nA:', 'role': 'user'}, {'content': 'Could you provide some context or information about what you are looking for or any particular questions you have, so I can assist better?', 'role': 'assistant'}], 'score_chosen': 4.0, 'score_rejected': 4.0}
+Hyperparameters:
+         Epochs: 2
+         Learning Rate: 2e-05
+         Batch Size: 8
+         Gradient Accumulation Steps: 8
+         Max Sequence Length: 1024
+         Reward Centering Coefficient: 0.001
+         Example Generation Frequency (steps): 1500
+         Validation Frequency (steps): 1500
+ 
+
+Number of trainable parameters: 494033664
+Number of trainable layers: 291
+Trainable layers:
+('model.embed_tokens.weight', torch.Size([151936, 896]))
+('model.layers.0.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.0.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.0.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.0.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.0.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.0.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.0.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.0.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.0.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.0.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.0.input_layernorm.weight', torch.Size([896]))
+('model.layers.0.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.1.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.1.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.1.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.1.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.1.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.1.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.1.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.1.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.1.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.1.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.1.input_layernorm.weight', torch.Size([896]))
+('model.layers.1.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.2.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.2.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.2.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.2.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.2.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.2.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.2.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.2.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.2.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.2.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.2.input_layernorm.weight', torch.Size([896]))
+('model.layers.2.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.3.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.3.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.3.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.3.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.3.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.3.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.3.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.3.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.3.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.3.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.3.input_layernorm.weight', torch.Size([896]))
+('model.layers.3.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.4.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.4.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.4.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.4.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.4.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.4.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.4.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.4.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.4.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.4.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.4.input_layernorm.weight', torch.Size([896]))
+('model.layers.4.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.5.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.5.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.5.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.5.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.5.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.5.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.5.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.5.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.5.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.5.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.5.input_layernorm.weight', torch.Size([896]))
+('model.layers.5.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.6.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.6.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.6.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.6.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.6.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.6.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.6.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.6.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.6.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.6.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.6.input_layernorm.weight', torch.Size([896]))
+('model.layers.6.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.7.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.7.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.7.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.7.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.7.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.7.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.7.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.7.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.7.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.7.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.7.input_layernorm.weight', torch.Size([896]))
+('model.layers.7.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.8.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.8.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.8.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.8.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.8.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.8.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.8.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.8.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.8.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.8.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.8.input_layernorm.weight', torch.Size([896]))
+('model.layers.8.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.9.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.9.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.9.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.9.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.9.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.9.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.9.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.9.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.9.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.9.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.9.input_layernorm.weight', torch.Size([896]))
+('model.layers.9.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.10.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.10.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.10.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.10.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.10.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.10.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.10.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.10.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.10.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.10.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.10.input_layernorm.weight', torch.Size([896]))
+('model.layers.10.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.11.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.11.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.11.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.11.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.11.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.11.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.11.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.11.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.11.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.11.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.11.input_layernorm.weight', torch.Size([896]))
+('model.layers.11.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.12.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.12.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.12.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.12.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.12.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.12.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.12.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.12.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.12.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.12.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.12.input_layernorm.weight', torch.Size([896]))
+('model.layers.12.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.13.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.13.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.13.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.13.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.13.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.13.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.13.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.13.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.13.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.13.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.13.input_layernorm.weight', torch.Size([896]))
+('model.layers.13.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.14.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.14.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.14.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.14.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.14.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.14.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.14.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.14.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.14.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.14.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.14.input_layernorm.weight', torch.Size([896]))
+('model.layers.14.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.15.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.15.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.15.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.15.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.15.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.15.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.15.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.15.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.15.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.15.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.15.input_layernorm.weight', torch.Size([896]))
+('model.layers.15.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.16.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.16.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.16.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.16.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.16.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.16.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.16.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.16.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.16.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.16.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.16.input_layernorm.weight', torch.Size([896]))
+('model.layers.16.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.17.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.17.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.17.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.17.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.17.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.17.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.17.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.17.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.17.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.17.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.17.input_layernorm.weight', torch.Size([896]))
+('model.layers.17.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.18.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.18.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.18.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.18.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.18.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.18.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.18.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.18.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.18.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.18.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.18.input_layernorm.weight', torch.Size([896]))
+('model.layers.18.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.19.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.19.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.19.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.19.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.19.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.19.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.19.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.19.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.19.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.19.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.19.input_layernorm.weight', torch.Size([896]))
+('model.layers.19.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.20.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.20.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.20.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.20.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.20.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.20.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.20.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.20.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.20.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.20.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.20.input_layernorm.weight', torch.Size([896]))
+('model.layers.20.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.21.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.21.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.21.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.21.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.21.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.21.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.21.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.21.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.21.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.21.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.21.input_layernorm.weight', torch.Size([896]))
+('model.layers.21.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.22.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.22.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.22.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.22.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.22.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.22.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.22.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.22.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.22.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.22.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.22.input_layernorm.weight', torch.Size([896]))
+('model.layers.22.post_attention_layernorm.weight', torch.Size([896]))
+('model.layers.23.self_attn.q_proj.weight', torch.Size([896, 896]))
+('model.layers.23.self_attn.q_proj.bias', torch.Size([896]))
+('model.layers.23.self_attn.k_proj.weight', torch.Size([128, 896]))
+('model.layers.23.self_attn.k_proj.bias', torch.Size([128]))
+('model.layers.23.self_attn.v_proj.weight', torch.Size([128, 896]))
+('model.layers.23.self_attn.v_proj.bias', torch.Size([128]))
+('model.layers.23.self_attn.o_proj.weight', torch.Size([896, 896]))
+('model.layers.23.mlp.gate_proj.weight', torch.Size([4864, 896]))
+('model.layers.23.mlp.up_proj.weight', torch.Size([4864, 896]))
+('model.layers.23.mlp.down_proj.weight', torch.Size([896, 4864]))
+('model.layers.23.input_layernorm.weight', torch.Size([896]))
+('model.layers.23.post_attention_layernorm.weight', torch.Size([896]))
+('model.norm.weight', torch.Size([896]))
+('reward_head.weight', torch.Size([1, 896]))
+Step 1500: Train Loss=0.5859, Eval Loss=0.5928, Train Centering Penalty=2.375000, Eval Centering Penalty=3.028172
+New best model saved with eval loss 0.5928
+Step 3000: Train Loss=0.6172, Eval Loss=0.5651, Train Centering Penalty=1.851562, Eval Centering Penalty=4.194594
+New best model saved with eval loss 0.5651
+Step 4500: Train Loss=0.5859, Eval Loss=0.5420, Train Centering Penalty=4.843750, Eval Centering Penalty=4.269094
+New best model saved with eval loss 0.5420
+Step 6000: Train Loss=0.6797, Eval Loss=0.5326, Train Centering Penalty=1.343750, Eval Centering Penalty=3.554438
+New best model saved with eval loss 0.5326
