@@ -62,6 +62,7 @@ class QwenRewardModel(nn.Module):
         model_inputs['input_ids'][torch.arange(attention_mask.size(0)), idx] = 198
         if not torch.all(last_token_ids == model_inputs['input_ids'][torch.arange(attention_mask.size(0)), idx]):
             print("Warning: last token ids set to 198 for correct evaluation.")
+            print(model_inputs['input_ids'][torch.arange(attention_mask.size(0)), idx])
 
         outputs = self.model(
             **model_inputs,
@@ -165,6 +166,7 @@ MAX_LENGTH = 1024
 BETA = 0.05
 LORA_RANK = 16
 EVAL_INTERVAL = 3000  # validate every N steps
+REWARD_EVAL_PROMPT_COUNT = 16 # use a fixed subset of test set prompt to calculate reward win rate on open-end generation
 
 print(f"Hyperparameters:\n \
         Epochs: {EPOCHS}\n \
@@ -174,7 +176,8 @@ print(f"Hyperparameters:\n \
         Max Sequence Length: {MAX_LENGTH}\n \
         Beta (DPO): {BETA}\n \
         LoRA Rank: {LORA_RANK}\n \
-        Validation Frequency (steps): {EVAL_INTERVAL}\n \n")
+        Validation Frequency (steps): {EVAL_INTERVAL}\n \
+        REWARD_EVAL_PROMPT_COUNT: {REWARD_EVAL_PROMPT_COUNT}\n \n")
 
 # %%
 train_dataloader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
@@ -494,10 +497,10 @@ for epoch in range(EPOCHS):
             # now, generate for several prompts in test set and evaluate the reward win rate against reference model
             win_count = 0
             total_count = 0
-            # use the first 32 prompts
+            # use the first few prompts
             pbar_eval = tqdm(test_dataloader, desc=f"Win Eval at Step {global_step}", leave=False)
             for batch_eval in pbar_eval:
-                if total_count > 32:
+                if total_count > REWARD_EVAL_PROMPT_COUNT:
                     break
                 prompts = batch_eval["prompt"]
                 # apply prompt processing
@@ -508,7 +511,7 @@ for epoch in range(EPOCHS):
                     model.eval()
                     generated_ids = model.generate(
                         **inputs,
-                        max_new_tokens=1536,
+                        max_new_tokens=3072,
                         do_sample=False, # deterministic decoding for reward evaluation
                     )
                     generated_texts = tokenizer.batch_decode(generated_ids, skip_special_tokens=False)
@@ -522,7 +525,7 @@ for epoch in range(EPOCHS):
                         model.eval()
                         ref_generated_ids = model.generate(
                             **inputs,
-                            max_new_tokens=1536,
+                            max_new_tokens=3072,
                         )
                     ref_generated_texts = tokenizer.batch_decode(ref_generated_ids, skip_special_tokens=False)
                     ref_reward_inputs = reward_tokenizer(ref_generated_texts, return_tensors="pt", padding=True, truncation=True, max_length=MAX_LENGTH).to(next(reward_model.parameters()).device)

@@ -62,6 +62,8 @@ class QwenRewardModel(nn.Module):
         if attention_mask is not None:
             seq_lengths = attention_mask.sum(dim=1) - 1
             last_hidden = hidden_states[torch.arange(hidden_states.size(0)), seq_lengths]
+            # for debug, last valid input token
+            print(model_inputs["input_ids"][torch.arange(hidden_states.size(0)), seq_lengths])
         else:
             last_hidden = hidden_states[:, -1]
 
@@ -197,7 +199,7 @@ import torch.optim as optim
 
 # optimize both backbone and reward head
 optimizer = optim.AdamW(reward_model.parameters(), lr=LEARNING_RATE)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader), eta_min=1e-6)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader)/GRADIENT_ACCUMULATION_STEPS, eta_min=1e-6)
 
 train_loss_history = [] # for each step (batch)
 eval_loss_history = [] # for each validation step
@@ -272,6 +274,7 @@ for epoch in range(EPOCHS):
         win_rewards = reward_model(win_model_inputs)
         lose_rewards = reward_model(lose_model_inputs)
         
+
         # compute max-likelihood loss
         loss = -torch.log(
             torch.sigmoid(

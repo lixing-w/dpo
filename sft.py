@@ -130,7 +130,7 @@ def mask_non_assistant_response(model_inputs, tokenizer):
 
 # set up optimizer
 optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader), eta_min=1e-6)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS*len(train_dataloader)/GRADIENT_ACCUMULATION_STEPS, eta_min=1e-6)
 
 train_loss_history = [] # for each step (batch)
 eval_loss_history = [] # for each validation step
